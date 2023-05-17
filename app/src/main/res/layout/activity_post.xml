@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+
+    tools:context=".PostActivity">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+
+        >
+        <Button
+            android:id="@+id/btn_return"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="返回"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_left"
+            />
+        <TextView
+            android:id="@+id/tv_1"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:text="发帖"
+            android:textColor="#000000"
+            android:textSize="50sp"
+            android:gravity="center"
+            android:layout_marginLeft="50dp"
+
+            />
+        <Button
+            android:id="@+id/btn_post"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="发布"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_right"
+            android:layout_marginLeft="50dp"
+
+            />
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/et_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:hint="标题"
+        android:maxLines="1"
+        android:padding="5dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/bg_username"
+        />
+
+
+    <EditText
+        android:id="@+id/et_text"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:hint="请输入文字"
+        android:padding="5dp"
+
+        android:layout_marginTop="50dp"
+        android:background="@drawable/bg_text"
+        />
+
+    <Button
+        android:id="@+id/btn_photo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="上传图片"
+        android:textSize="30sp"
+        tools:ignore="MissingConstraints" />
+
+</LinearLayout>
