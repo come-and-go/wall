@@ -111,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         else if (loginresponse.getCode() == 1) {
                                             Toast.makeText(getApplicationContext(), "管理员登录成功", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(LoginActivity.this, PostActivity.class);
+                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                                             //intent.putExtra("userName", username);
                                             startActivity(intent);
                                         }
