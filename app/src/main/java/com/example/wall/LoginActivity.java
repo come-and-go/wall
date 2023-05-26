@@ -4,9 +4,7 @@ package com.example.wall;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,7 +13,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -111,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         else if (loginresponse.getCode() == 1) {
                                             Toast.makeText(getApplicationContext(), "管理员登录成功", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                                            Intent intent = new Intent(LoginActivity.this, ManagerHomeActivity.class);
                                             //intent.putExtra("userName", username);
                                             startActivity(intent);
                                         }
@@ -137,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = null;
-                intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                intent = new Intent(LoginActivity.this, MapActivity.class);
                 startActivity(intent);
             }
         });

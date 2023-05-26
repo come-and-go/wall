@@ -1,7 +1,6 @@
 package com.example.wall;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,12 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.wall.biz.PostsBiz;
-import com.example.wall.config.Config;
 import com.example.wall.net.CommonCallback;
 import com.example.wall.ui.view.SwipeRefresh;
 import com.example.wall.ui.view.SwipeRefreshLayout;
@@ -37,7 +35,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class HomeActivity extends BaseActivity {
+public class ManagerHomeActivity extends BaseActivity {
     ImageView ManagerCenter;
     ImageView Home;
     TextView tv_all;
@@ -57,14 +55,14 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_managerhome);
         setTitle("问题管理");
         initView();
         initEvent();
         loadAll();
     }
 
-    public static class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
+    public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
         private final List<Posts> posts;
 
         public PostAdapter(List<Posts> posts) {
@@ -84,6 +82,87 @@ public class HomeActivity extends BaseActivity {
             // 在 ViewHolder 中设置帖子数据
             Posts post = posts.get(position);
             holder.bind(post);
+            holder.delete_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    View itemView = (View) v.getParent();
+                    // 从视图的tag属性中获取ID
+                    String this_id = (String) itemView.getTag();
+                    OkHttpClient client = new OkHttpClient();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/delete").newBuilder();
+                    urlBuilder.addQueryParameter("post_id", this_id);
+                    String url = urlBuilder.build().toString();
+
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+                    Call call = client.newCall(request);
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            //请求失败
+                            Log.i("请求情况：", "请求失败");
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                Log.i("响应状态", "响应成功");
+                                assert response.body() != null;
+                                final String responseBody = response.body().string();
+                                Gson gson = new Gson();
+                                if(if_all == 1){
+                                    get_data(page_numc);
+                                }
+                                else{
+                                    get_cuc_data(page_numc, if_checked);
+                                }
+
+                            }
+                        }
+                    });
+                }
+            });
+            holder.check_button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    View itemView = (View) v.getParent();
+                    String this_id = (String) itemView.getTag();
+                    OkHttpClient client = new OkHttpClient();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/check").newBuilder();
+                    urlBuilder.addQueryParameter("post_id", this_id);
+                    String url = urlBuilder.build().toString();
+
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+                    Call call = client.newCall(request);
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            //请求失败
+                            Log.i("请求情况：", "请求失败");
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            if (response.isSuccessful()) {
+                                Log.i("响应状态", "响应成功");
+                                assert response.body() != null;
+                                final String responseBody = response.body().string();
+                                Gson gson = new Gson();
+                                if(if_all == 1){
+                                    get_data(page_numc);
+                                }
+                                else{
+                                    get_cuc_data(page_numc, if_checked);
+                                }
+
+                            }
+                        }
+                    });
+                }
+            });
         }
 
         @Override
@@ -95,6 +174,8 @@ public class HomeActivity extends BaseActivity {
             private final TextView titleTextView;
             private final TextView contentTextView;
             private final TextView ownerTextView;
+            public Button delete_button;
+            public Button check_button;
 
             public PostViewHolder(@NonNull View itemView) {
                 super(itemView);
@@ -102,6 +183,8 @@ public class HomeActivity extends BaseActivity {
                 titleTextView = itemView.findViewById(R.id.id_tv_title);
                 contentTextView = itemView.findViewById(R.id.id_tv_content);
                 ownerTextView = itemView.findViewById(R.id.id_tv_author);
+                delete_button = itemView.findViewById(R.id.id_btn_del);
+                check_button = itemView.findViewById(R.id.id_btn_jug);
             }
 
             public void bind(Posts post) {
@@ -109,6 +192,7 @@ public class HomeActivity extends BaseActivity {
                 titleTextView.setText(post.getTitle());
                 contentTextView.setText(post.getContext());
                 ownerTextView.setText(post.getOwner());
+                itemView.setTag(post.getId());
             }
         }
     }
@@ -171,7 +255,7 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = null;
-                intent = new Intent(HomeActivity.this, ManagerCenterActivity.class);
+                intent = new Intent(ManagerHomeActivity.this, ManagerCenterActivity.class);
                 startActivity(intent);
             }
         });
@@ -281,7 +365,7 @@ public class HomeActivity extends BaseActivity {
                                 PostAdapter adapter = new PostAdapter(have_posts.add(posts));
                                 eRecyclerView.setAdapter(adapter);
                                 // 设置布局管理器，可以选择线性布局、网格布局等
-                                eRecyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this)); // 使用线性布局
+                                eRecyclerView.setLayoutManager(new LinearLayoutManager(ManagerHomeActivity.this)); // 使用线性布局
                                 eRecyclerView.scrollToPosition(firstVisibleItemPosition);
                             }
                         }
@@ -335,7 +419,7 @@ public class HomeActivity extends BaseActivity {
                                 PostAdapter adapter = new PostAdapter(have_posts.add(posts));
                                 eRecyclerView.setAdapter(adapter);
                                 // 设置布局管理器，可以选择线性布局、网格布局等
-                                eRecyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this)); // 使用线性布局
+                                eRecyclerView.setLayoutManager(new LinearLayoutManager(ManagerHomeActivity.this)); // 使用线性布局
                                 eRecyclerView.scrollToPosition(firstVisibleItemPosition);
                             }
                         }
@@ -387,7 +471,7 @@ public class HomeActivity extends BaseActivity {
                                 PostAdapter adapter = new PostAdapter(have_posts.add(posts));
                                 eRecyclerView.setAdapter(adapter);
                                 // 设置布局管理器，可以选择线性布局、网格布局等
-                                eRecyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this)); // 使用线性布局
+                                eRecyclerView.setLayoutManager(new LinearLayoutManager(ManagerHomeActivity.this)); // 使用线性布局
                                 eRecyclerView.scrollToPosition(firstVisibleItemPosition);
                             }
                         }
@@ -439,7 +523,7 @@ public class HomeActivity extends BaseActivity {
                                 PostAdapter adapter = new PostAdapter(have_posts.add(posts));
                                 eRecyclerView.setAdapter(adapter);
                                 // 设置布局管理器，可以选择线性布局、网格布局等
-                                eRecyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this)); // 使用线性布局
+                                eRecyclerView.setLayoutManager(new LinearLayoutManager(ManagerHomeActivity.this)); // 使用线性布局
                                 eRecyclerView.scrollToPosition(firstVisibleItemPosition);
                             }
                         }

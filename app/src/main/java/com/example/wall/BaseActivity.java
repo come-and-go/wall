@@ -4,17 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.wall.R;
 import com.example.wall.biz.UserBiz;
-import com.example.wall.listener.ClickListener;
-import com.example.wall.PostActivity;
-import com.example.wall.HomeActivity;
 
 /**
  * 所有activity的基本超类，用来抽取常用方法
@@ -51,7 +46,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void toHomeActivity() {
-        Intent intent = new Intent(this, HomeActivity.class);
+        Intent intent = new Intent(this, ManagerHomeActivity.class);
         startActivity(intent);
         finish();
     }

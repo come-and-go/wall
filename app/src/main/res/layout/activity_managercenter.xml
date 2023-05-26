@@ -8,6 +8,8 @@
     tools:context="com.example.wall.ManagerCenterActivity">
 
 
+
+
     <View
         android:layout_marginTop="670dp"
         android:layout_width="match_parent"
