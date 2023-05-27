@@ -19,6 +19,13 @@ public class InnerPostsData {
         }
         return posts;
     }
+    public void delete_ten(){
+        if(posts != null ){
+            for(int i = 0; i<10;i++){
+                posts.remove(posts.size()-1);
+            }
+        }
+    }
     public void empty(){
         if(posts != null) {
             posts.clear();
