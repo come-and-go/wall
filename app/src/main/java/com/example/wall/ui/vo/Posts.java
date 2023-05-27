@@ -1,5 +1,7 @@
 package com.example.wall.ui.vo;
 
+import android.location.Location;
+
 import com.example.wall.bean.BaseTask;
 import com.example.wall.bean.User;
 
@@ -50,6 +52,8 @@ public class Posts implements Serializable {
     public List<RepeatForPost> getRepeat() {
         return repeat;
     }
+    public Double getLocation_x(){return location_x;}
+    public Double getLocation_y(){return location_y;}
 
     public void setRepeat(List<RepeatForPost> repeat) {
         this.repeat = repeat;

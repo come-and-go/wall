@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.wall.biz.PostsBiz;
@@ -23,16 +24,23 @@ import com.example.wall.ui.view.SwipeRefreshLayout;
 import com.example.wall.ui.vo.Posts;
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ManagerHomeActivity extends BaseActivity {
@@ -82,20 +90,36 @@ public class ManagerHomeActivity extends BaseActivity {
             // 在 ViewHolder 中设置帖子数据
             Posts post = posts.get(position);
             holder.bind(post);
+            holder.in_post.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // 在这里处理按钮点击事件
+                    // 可以根据需要执行相应的操作
+                }
+            });
             holder.delete_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    View itemView = (View) v.getParent();
+                    View vp = (View) v.getParent();
+                    View vpp = (View) vp.getParent();
+                    View vppp = (View) vpp.getParent();
                     // 从视图的tag属性中获取ID
-                    String this_id = (String) itemView.getTag();
+                    String this_id = (String) vppp.getTag(R.id.this_post_id);
+                    Log.d("todeid",this_id);
                     OkHttpClient client = new OkHttpClient();
                     HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/delete").newBuilder();
-                    urlBuilder.addQueryParameter("post_id", this_id);
+                    //urlBuilder.addQueryParameter("post_id", this_id);
                     String url = urlBuilder.build().toString();
+
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("post_id", this_id)
+                            .build();
 
                     Request request = new Request.Builder()
                             .url(url)
+                            .post(requestBody)
                             .build();
+
                     Call call = client.newCall(request);
                     call.enqueue(new Callback() {
                         @Override
@@ -110,12 +134,14 @@ public class ManagerHomeActivity extends BaseActivity {
                                 Log.i("响应状态", "响应成功");
                                 assert response.body() != null;
                                 final String responseBody = response.body().string();
+                                Log.i("回复", responseBody);
                                 Gson gson = new Gson();
+                                have_posts.delete_ten();
                                 if(if_all == 1){
-                                    get_data(page_numc);
+                                    get_up_data(page_numc);
                                 }
                                 else{
-                                    get_cuc_data(page_numc, if_checked);
+                                    get_up_cuc_data(page_numc, if_checked);
                                 }
 
                             }
@@ -126,15 +152,23 @@ public class ManagerHomeActivity extends BaseActivity {
             holder.check_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    View itemView = (View) v.getParent();
-                    String this_id = (String) itemView.getTag();
+                    View vp = (View) v.getParent();
+                    View vpp = (View) vp.getParent();
+                    View vppp = (View) vpp.getParent();
+                    // 从视图的tag属性中获取ID
+                    String this_id = (String) vppp.getTag(R.id.this_post_id);
+                    Log.d("tochid",this_id);
                     OkHttpClient client = new OkHttpClient();
                     HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/check").newBuilder();
-                    urlBuilder.addQueryParameter("post_id", this_id);
                     String url = urlBuilder.build().toString();
+
+                    RequestBody requestBody = new FormBody.Builder()
+                            .add("post_id", this_id)
+                            .build();
 
                     Request request = new Request.Builder()
                             .url(url)
+                            .post(requestBody)
                             .build();
                     Call call = client.newCall(request);
                     call.enqueue(new Callback() {
@@ -150,12 +184,14 @@ public class ManagerHomeActivity extends BaseActivity {
                                 Log.i("响应状态", "响应成功");
                                 assert response.body() != null;
                                 final String responseBody = response.body().string();
+                                Log.i("回复", responseBody);
                                 Gson gson = new Gson();
+                                have_posts.delete_ten();
                                 if(if_all == 1){
-                                    get_data(page_numc);
+                                    get_up_data(page_numc);
                                 }
                                 else{
-                                    get_cuc_data(page_numc, if_checked);
+                                    get_up_cuc_data(page_numc, if_checked);
                                 }
 
                             }
@@ -174,6 +210,7 @@ public class ManagerHomeActivity extends BaseActivity {
             private final TextView titleTextView;
             private final TextView contentTextView;
             private final TextView ownerTextView;
+            public LinearLayout in_post;
             public Button delete_button;
             public Button check_button;
 
@@ -185,6 +222,7 @@ public class ManagerHomeActivity extends BaseActivity {
                 ownerTextView = itemView.findViewById(R.id.id_tv_author);
                 delete_button = itemView.findViewById(R.id.id_btn_del);
                 check_button = itemView.findViewById(R.id.id_btn_jug);
+                in_post = itemView.findViewById(R.id.id_in_post);
             }
 
             public void bind(Posts post) {
@@ -192,7 +230,7 @@ public class ManagerHomeActivity extends BaseActivity {
                 titleTextView.setText(post.getTitle());
                 contentTextView.setText(post.getContext());
                 ownerTextView.setText(post.getOwner());
-                itemView.setTag(post.getId());
+                itemView.setTag(R.id.this_post_id, post.getId());
             }
         }
     }
@@ -349,7 +387,6 @@ public class ManagerHomeActivity extends BaseActivity {
                     assert response.body() != null;
                     final String responseBody = response.body().string();
                     Gson gson = new Gson();
-                    Log.i("内容", responseBody);
                     final ReadPostsResponse postsResponse = gson.fromJson(responseBody, ReadPostsResponse.class);
                     // 在主线程中更新UI
                     runOnUiThread(new Runnable() {
@@ -403,7 +440,6 @@ public class ManagerHomeActivity extends BaseActivity {
                     assert response.body() != null;
                     final String responseBody = response.body().string();
                     Gson gson = new Gson();
-                    Log.i("内容", responseBody);
                     final ReadPostsResponse postsResponse = gson.fromJson(responseBody, ReadPostsResponse.class);
                     // 在主线程中更新UI
                     runOnUiThread(new Runnable() {
@@ -455,7 +491,6 @@ public class ManagerHomeActivity extends BaseActivity {
                     assert response.body() != null;
                     final String responseBody = response.body().string();
                     Gson gson = new Gson();
-                    Log.i("内容", responseBody);
                     final ReadPostsResponse postsResponse = gson.fromJson(responseBody, ReadPostsResponse.class);
                     // 在主线程中更新UI
                     runOnUiThread(new Runnable() {
@@ -507,7 +542,6 @@ public class ManagerHomeActivity extends BaseActivity {
                     assert response.body() != null;
                     final String responseBody = response.body().string();
                     Gson gson = new Gson();
-                    Log.i("内容", responseBody);
                     final ReadPostsResponse postsResponse = gson.fromJson(responseBody, ReadPostsResponse.class);
                     // 在主线程中更新UI
                     runOnUiThread(new Runnable() {
