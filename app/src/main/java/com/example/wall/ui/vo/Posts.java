@@ -49,8 +49,7 @@ public class Posts implements Serializable {
         return ownername;
     }
 
-    public Double getLocation_x(){return location_x;}
-    public Double getLocation_y(){return location_y;}
+
 
     public List<RepeatForPost> getRepeat() {
         return repeat;
