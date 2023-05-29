@@ -3,11 +3,15 @@ package com.example.wall;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +19,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -35,6 +40,7 @@ import com.example.wall.ui.vo.Posts;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -122,11 +128,7 @@ public class MapActivity extends AppCompatActivity {
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                distance = seekBar.getProgress();
-                Log.d("distance",String.valueOf(distance));
-                textView.setText(String.valueOf(distance));
-                aMap.clear();
-                show_posts();
+
                 }
 
             @Override
@@ -138,7 +140,14 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //Toast.makeText(mContext, "放开SeekBar", Toast.LENGTH_SHORT).show();
+                distance = seekBar.getProgress();
+                Log.d("distance",String.valueOf(distance));
+                textView.setText(String.valueOf(distance));
 
+
+
+                aMap.clear();
+                show_posts();
             }
         });
 

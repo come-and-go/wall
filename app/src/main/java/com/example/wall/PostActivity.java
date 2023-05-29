@@ -54,6 +54,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.wall.api.UpdateImageApi;
 import com.google.gson.Gson;
 import com.hjq.http.EasyHttp;
@@ -82,13 +83,15 @@ public class PostActivity extends AppCompatActivity {
     private Button mBtnPost;
     private EditText mEtTitle;
     private EditText mEtText;
-
+    Uri videoUri = null;
 
     private static final int TAKE_PHOTO = 1;
     private ImageView picture;
     private Uri imageUri;
     private static final int PERMISSION_REQUEST_CODE = 1;
     public static final int CHOOSE_PHOTO = 2;
+    private int type = 0;
+    private static final int CHOOSE_VIDEO = 3;
     public File outputImage = null;
 
     @Override
@@ -101,7 +104,7 @@ public class PostActivity extends AppCompatActivity {
         mEtTitle = findViewById(R.id.et_title);
         mEtText = findViewById(R.id.et_text);
 
-
+        Button chooseVideo = (Button) findViewById(R.id.btn_video);
         Button takePhoto = (Button) findViewById(R.id.btn_photo);
         Button chooseFromAlbum = (Button) findViewById(R.id.btn_album);
         picture = (ImageView) findViewById(R.id.image);
@@ -140,14 +143,39 @@ public class PostActivity extends AppCompatActivity {
                 String text = mEtText.getText().toString();
                 int content_type = 0;
                 double location_x = mlocation.getLongitude() * 10000;//jingdu
-                //location_x = new BigDecimal(location_x).setScale(-1, BigDecimal.ROUND_HALF_UP).doubleValue();
                 double location_y = mlocation.getLatitude() * 10000;//weidu
-                //location_y = new BigDecimal(location_y).setScale(-1, BigDecimal.ROUND_HALF_UP).doubleValue();
 
                 Log.d("111111LoctianActivity>>", "mlocation>>:" + location_x);
                 Log.d("111111LoctianActivity>>", "mlocation>>:" + location_y);
 
                 File file = null;
+                if (type==2)
+                {
+                    if (null != videoUri){
+
+                        long time=System.currentTimeMillis();
+                        file = new File(getExternalFilesDir(Environment.DIRECTORY_MOVIES), time+".mp4");
+                        if (!file.exists()) {
+                            try {
+                                // 从 videoUri 中复制视频文件到本地
+                                InputStream inputStream = getContentResolver().openInputStream(videoUri);
+                                OutputStream outputStream = new FileOutputStream(file);
+                                byte[] buffer = new byte[1024];
+                                int bytesRead;
+                                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                                    outputStream.write(buffer, 0, bytesRead);
+                                }
+                                inputStream.close();
+                                outputStream.close();
+                                // 通知系统多媒体扫描该文件
+                                MediaScannerConnection.scanFile(PostActivity.this, new String[]{file.getPath()}, null, null);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                else if (type==1)
                 if (null != bitmap){
                     long time=System.currentTimeMillis();
                     file = new File(getExternalFilesDir(DIRECTORY_PICTURES), time+".png");
@@ -201,7 +229,7 @@ public class PostActivity extends AppCompatActivity {
                         MediaType.parse("application/json; charset=utf-8"),
                         jsonString
                 );
-                MediaType mediaType = MediaType.parse("image/*"); // replace "image/*" with the actual file type
+                MediaType mediaType = MediaType.parse("image,video/*"); // replace "image/*" with the actual file type
                 MultipartBody requestBody;
                 if (file == null) {
                     requestBody = new MultipartBody.Builder()
@@ -379,6 +407,24 @@ public class PostActivity extends AppCompatActivity {
             });
         }
 
+        chooseVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //动态申请读取SD卡权限
+                if (ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(PostActivity.this, new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 2);
+                } else {
+                    openVideo();
+                }
+
+
+            }
+        });
+
 
         chooseFromAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -401,10 +447,6 @@ public class PostActivity extends AppCompatActivity {
             public void onClick(View view) {
                 long time=System.currentTimeMillis();
                 outputImage = new File(getExternalFilesDir(DIRECTORY_PICTURES), time+".png");
-//                outputImage = new File(getExternalCacheDir(), "output_image.jpg");
-                // 创建File对象，用于存储拍照后1的图片
-                // 将图片命名为output_image.jpg，并将它存放在手机SD卡的应用关联缓存目录下
-                // getExternalCacheDir()可以得到这个目录
                 try {
                     if (outputImage.exists()) {
                         outputImage.delete();
@@ -444,6 +486,7 @@ public class PostActivity extends AppCompatActivity {
             case TAKE_PHOTO:
                 if (resultCode == RESULT_OK) {
                     try {
+                        type=1;
                         bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         picture.setImageBitmap(bitmap);
                     } catch (FileNotFoundException e) {
@@ -454,6 +497,7 @@ public class PostActivity extends AppCompatActivity {
             case CHOOSE_PHOTO:
                 if (resultCode == RESULT_OK) {
                     String imagePath = null;
+                    type=1;
                     if (Build.VERSION.SDK_INT >= 30) {
                         imagePath = getBitmapP(data);
                     } else if (Build.VERSION.SDK_INT >= 19) {
@@ -471,7 +515,19 @@ public class PostActivity extends AppCompatActivity {
 //                            // handle the error as appropriate for your app
 //                        }
 //                    }
-                }//我連一下後端
+                }
+                break;
+            case CHOOSE_VIDEO:
+                if (resultCode == RESULT_OK) {
+                        type = 2;
+                        videoUri = data.getData();
+
+                        Glide.with(this)
+                                .asBitmap()
+                                .load(videoUri) // Uri of the video
+                                .into(picture);
+
+                }
                 break;
             default:
                 break;
@@ -480,10 +536,22 @@ public class PostActivity extends AppCompatActivity {
 
     private void openAlbum() {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
-        intent.setType("image/*");
+        intent.setType("*/*");
+        String[] mimeTypes = {"image/*"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         startActivityForResult(intent, CHOOSE_PHOTO); //打开相册
     }
+    private void openVideo() {
+        Intent intent = new Intent("android.intent.action.GET_CONTENT");
+        intent.setType("*/*");
+        String[] mimeTypes = {"video/*"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        startActivityForResult(intent, CHOOSE_VIDEO); //打开相册
 
+
+
+
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -492,7 +560,14 @@ public class PostActivity extends AppCompatActivity {
                 openAlbum();
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 } else {
-                    Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 2:
+                openVideo();
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    //Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
                 }
                 break;
             default:
@@ -579,17 +654,6 @@ public class PostActivity extends AppCompatActivity {
     }
 
 
-    private void copyFile(File from, File to) throws IOException {
-        try (InputStream in = new FileInputStream(from)) {
-            try (OutputStream out = new FileOutputStream(to)) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = in.read(buffer)) > 0) {
-                    out.write(buffer, 0, length);
-                }
-            }
-        }
-    }
 
     public String saveBitmapToFile(Bitmap bitmap) {
         // 应用的私有文件夹
