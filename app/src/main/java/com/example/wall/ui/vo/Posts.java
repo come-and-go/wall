@@ -1,12 +1,6 @@
 package com.example.wall.ui.vo;
 
-import android.location.Location;
-
-import com.example.wall.bean.BaseTask;
-import com.example.wall.bean.User;
-
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 public class Posts implements Serializable {
@@ -21,7 +15,6 @@ public class Posts implements Serializable {
     Double location_y;
     String ownername;
     String post_time;
-    List<RepeatForPost> repeat;
 
     @Override
     public String toString() {
@@ -30,7 +23,6 @@ public class Posts implements Serializable {
                 ", title=" + title +
                 ", context=" + text +
                 ", user=" + ownername +
-                ", repeat=" + repeat +
                 '}';
     }
 
@@ -40,22 +32,21 @@ public class Posts implements Serializable {
     public String getTitle() {
         return title;
     }
+    public int getContent_type(){return content_type;}
 
     public String getContext(){
         return text;
     }
+    public String getMedia_url(){return media_url;}
 
     public String getOwner() {
         return ownername;
     }
 
-    public List<RepeatForPost> getRepeat() {
-        return repeat;
-    }
     public Double getLocation_x(){return location_x;}
     public Double getLocation_y(){return location_y;}
 
-    public void setRepeat(List<RepeatForPost> repeat) {
-        this.repeat = repeat;
+
+    public String getTime() { return post_time;
     }
 }

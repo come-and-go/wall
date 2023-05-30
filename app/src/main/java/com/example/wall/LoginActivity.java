@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button mBtnRegister;
     private EditText mEtUsername;
     private  EditText mEtPassword;
+    public static String all_username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +95,14 @@ public class LoginActivity extends AppCompatActivity {
                                 final String responseBody = response.body().string();
                                 Gson gson = new Gson();
                                 final LoginResponse loginresponse = gson.fromJson(responseBody, LoginResponse.class);
-
+                                all_username = username;
                                 // 在主线程中更新UI
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         if (loginresponse.getCode() == 0) {
                                             Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(LoginActivity.this, PostActivity.class);
+                                            Intent intent = new Intent(LoginActivity.this, UserHomeActivity.class);
                                             intent.putExtra("userName", username);
                                             startActivity(intent);
                                         }
@@ -134,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = null;
-                intent = new Intent(LoginActivity.this, MapActivity.class);
+                intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });

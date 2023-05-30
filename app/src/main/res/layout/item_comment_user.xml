@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20sp"
+    android:orientation="vertical"
+    android:background="@drawable/item_base_task"
+    >
+    <LinearLayout
+        android:id="@+id/id_u_comment_id"
+        android:layout_marginLeft="18sp"
+        android:layout_marginTop="5sp"
+        android:layout_marginRight="18sp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="left"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="re by:"
+                android:maxLength="8"
+                android:textSize="20sp"
+                />
+            <TextView
+                android:id="@+id/id_u_comment_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="20sp"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="18sp"
+        android:layout_marginTop="5sp"
+        android:layout_marginRight="18sp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/id_u_comment_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="猜猜我说了啥啦啦啦啦"
+            android:lineSpacingExtra="8dp"
+            android:textSize="15sp"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="18sp"
+        android:layout_marginTop="5sp"
+        android:layout_marginRight="18sp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/id_u_comment_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="18sp"
+        android:layout_marginTop="5sp"
+        android:layout_marginRight="18sp"
+        android:layout_marginBottom="10sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right">
+        <TextView
+            android:id="@+id/id_u_comment_post_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:text="yyyy-mm-dd hh-mm" />
+    </LinearLayout>
+</LinearLayout>

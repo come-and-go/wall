@@ -4,7 +4,7 @@ import com.example.wall.bean.BaseTask;
 import com.example.wall.config.Config;
 import com.example.wall.net.CommonCallback;
 import com.example.wall.ui.vo.Posts;
-import com.example.wall.ui.vo.RepeatForPost;
+import com.example.wall.ui.vo.CommentForPost;
 import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 
@@ -48,7 +48,7 @@ public class PostsBiz {
                 .execute(commonCallback);
     }
 
-    public void getRepeatByRid(Long rid,CommonCallback<List<RepeatForPost>> commonCallback){
+    public void getRepeatByRid(Long rid,CommonCallback<List<CommentForPost>> commonCallback){
         OkHttpUtils
                 .post()
                 .url(Config.baseUrl + "getQuestionRepeatByRid")
@@ -57,7 +57,7 @@ public class PostsBiz {
                 .build()
                 .execute(commonCallback);
     }
-    public void updateRepeat(RepeatForPost repeat, CommonCallback<List<RepeatForPost>> commonCallback){
+    public void updateRepeat(CommentForPost repeat, CommonCallback<List<CommentForPost>> commonCallback){
         OkHttpUtils
                 .postString()
                 .tag(this)

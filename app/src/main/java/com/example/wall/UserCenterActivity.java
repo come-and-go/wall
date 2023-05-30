@@ -5,6 +5,7 @@ import static com.example.wall.LoginActivity.all_username;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,10 +19,12 @@ import com.example.wall.ui.view.SwipeRefresh;
 
 import java.util.ArrayList;
 
-public class ManagerCenterActivity extends AppCompatActivity {
+public class UserCenterActivity extends AppCompatActivity {
 
-    ImageView ManagerCenter;
+    ImageView UserCenter;
     ImageView Home;
+    LinearLayout myPosts;
+    LinearLayout myComments;
     LinearLayout change_password;
     LinearLayout log_out;
     TextView show_name;
@@ -29,7 +32,7 @@ public class ManagerCenterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_managercenter);
+        setContentView(R.layout.activity_user_center);
         initView();
         show_name.setText(all_username);
         initEvent();
@@ -40,7 +43,7 @@ public class ManagerCenterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = null;
-                intent = new Intent(ManagerCenterActivity.this, ManagerHomeActivity.class);
+                intent = new Intent(UserCenterActivity.this, UserHomeActivity.class);
                 startActivity(intent);
             }
         });
@@ -50,7 +53,7 @@ public class ManagerCenterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = null;
-                intent = new Intent(ManagerCenterActivity.this, LoginActivity.class);
+                intent = new Intent(UserCenterActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
@@ -59,17 +62,38 @@ public class ManagerCenterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = null;
-                intent = new Intent(ManagerCenterActivity.this, LoginActivity.class);
+                intent = new Intent(UserCenterActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        myPosts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = null;
+                intent = new Intent(UserCenterActivity.this, LookMypostsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        myComments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = null;
+                intent = new Intent(UserCenterActivity.this, LookMycommentsActivity.class);
                 startActivity(intent);
             }
         });
     }
 
+    @SuppressLint("WrongViewCast")
     private void initView() {
-        Home = findViewById(R.id.id_m_home);
-        ManagerCenter = findViewById(R.id.id_m_usercenter);
-        change_password = findViewById(R.id.m_change_my_pass);
-        log_out = findViewById(R.id.m_log_out);
-        show_name = findViewById(R.id.id_m_center_username);
+        Home = findViewById(R.id.id_u_userhome);
+        UserCenter = findViewById(R.id.id_u_usercenter);
+        change_password = findViewById(R.id.u_change_my_pass);
+        log_out = findViewById(R.id.u_log_out);
+        show_name = findViewById(R.id.id_u_center_username);
+        myPosts = findViewById(R.id.tv_my_posts);
+        myComments = findViewById(R.id.tv_my_comments);
     }
 }

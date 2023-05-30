@@ -15,4 +15,13 @@
     <string name="http_request_cancel">请求被中断，请重试</string>
     <string name="http_response_null_body">服务器数据返回异常，请稍后再试</string>
     <string name="http_response_md5_error">下载失败，文件 md5 校验失败</string>
+    <string name="title_activity_user_home_list">UserHomeListActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
 </resources>

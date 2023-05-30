@@ -8,55 +8,56 @@
     tools:context="com.example.wall.ManagerHomeActivity">
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#CEB1E8">
+        android:layout_height="69dp"
+        android:background="#C9B7FF"
+        android:orientation="horizontal">
+
         <TextView
-            android:id="@+id/id_tv_all"
-            android:text="   来去之间   "
-            android:layout_marginLeft="20sp"
-            android:layout_gravity="center"
-            android:textColor="#121415"
-            android:textStyle="bold"
             android:layout_width="wrap_content"
-            android:textSize="20dp"
-            android:layout_height="wrap_content"/>
-        <View
-            android:layout_width="1dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="15sp"
-            android:layout_height="match_parent"
-            android:background="@color/white"/>
-        <TextView
-            android:id="@+id/id_tv_unchecked"
-            android:textColor="#1B1E20"
-            android:textStyle="bold"
-            android:text="未审核"
-            android:layout_gravity="center"
-            android:layout_marginLeft="35sp"
+            android:layout_marginTop="15dp"
+            android:text="来去之间"
+            android:textColor="@color/purple"
             android:textSize="20dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <View
-            android:layout_width="1dp"
-            android:layout_marginLeft="25sp"
-            android:layout_height="match_parent"
-            android:background="@color/white"/>
+            android:textStyle="bold" />
+
+        <SeekBar
+            android:id="@+id/map_seekbar"
+            android:layout_width="80dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="15sp"
+            android:layout_marginTop="15dp"
+            android:max="2000"
+            android:min="100" />
+
         <TextView
-            android:id="@+id/id_tv_checked"
-            android:textColor="#151719"
-            android:textStyle="bold"
-            android:text="已审核"
-            android:layout_gravity="center"
-            android:textSize="20dp"
-            android:layout_marginLeft="35sp"
+            android:id="@+id/map_distance"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="100" />
+
+        <ImageView
+            android:id="@+id/btn_changeMap"
+            android:layout_marginLeft="20dp"
+            android:layout_width="70dp"
+            android:layout_height="43dp"
+            android:layout_gravity="center"
+            android:src="@drawable/map" />
+        <ImageView
+            android:id="@+id/id_refresh"
+            android:layout_marginLeft="20dp"
+            android:layout_width="70dp"
+            android:layout_height="43dp"
+            android:layout_gravity="center"
+            android:src="@drawable/refresh" />
     </LinearLayout>
 
 
     <com.example.wall.ui.view.SwipeRefreshLayout
-        android:id="@+id/id_swiperefresh"
+        android:id="@+id/id_userhome_swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginLeft="15sp"
@@ -65,7 +66,7 @@
         android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/id_recyclerview"
+            android:id="@+id/id_userhome_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
     </com.example.wall.ui.view.SwipeRefreshLayout>
@@ -80,14 +81,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
-            android:layout_marginLeft="80dp"
+            android:layout_marginLeft="40dp"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#88A573D6">
 
             <ImageView
-                android:id="@+id/id_Manager_Home"
+                android:id="@+id/id_userHome"
                 android:layout_width="70dp"
                 android:layout_height="43dp"
                 android:layout_gravity="center"
@@ -98,18 +99,39 @@
                 android:layout_gravity="center"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:text="全部帖子"/>
+                android:text="附近帖子"/>
         </LinearLayout>
 
-
         <LinearLayout
-            android:layout_marginLeft="120dp"
+            android:layout_marginLeft="60dp"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/id_manager_Center"
+                android:id="@+id/id_newPost"
+                android:layout_width="70dp"
+                android:layout_height="43dp"
+                android:layout_gravity="center"
+                android:src="@drawable/common_add" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:text="我要发帖"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_marginLeft="60dp"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/id_userCenter"
                 android:layout_width="56dp"
                 android:layout_height="44dp"
                 android:layout_gravity="center"

@@ -18,18 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.wall.biz.PostsBiz;
-import com.example.wall.net.CommonCallback;
 import com.example.wall.ui.view.SwipeRefresh;
 import com.example.wall.ui.view.SwipeRefreshLayout;
 import com.example.wall.ui.vo.Posts;
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -64,10 +58,11 @@ public class ManagerHomeActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_managerhome);
-        setTitle("问题管理");
+        setTitle("帖子列表");
         initView();
         initEvent();
-        loadAll();
+        tv_all.setTextColor(getResources().getColor(R.color.purple));
+        get_data(1);
     }
 
     public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -81,7 +76,7 @@ public class ManagerHomeActivity extends BaseActivity {
         @Override
         public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             // 创建并返回一个用于显示帖子的视图 ViewHolder
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_manager_post, parent, false);
             return new PostViewHolder(view);
         }
 
@@ -93,8 +88,13 @@ public class ManagerHomeActivity extends BaseActivity {
             holder.in_post.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // 在这里处理按钮点击事件
-                    // 可以根据需要执行相应的操作
+                    View vp = (View) v.getParent();
+                    // 从视图的tag属性中获取ID
+                    String this_id = (String) vp.getTag(R.id.this_post_id);
+                    Intent intent = new Intent(ManagerHomeActivity.this, ManagerPostDetailsActivity.class);
+                    Log.d("todetail",this_id);
+                    intent.putExtra("post_id", this_id);  // 替换为实际的键值对
+                    startActivity(intent);
                 }
             });
             holder.delete_button.setOnClickListener(new View.OnClickListener() {
@@ -210,6 +210,7 @@ public class ManagerHomeActivity extends BaseActivity {
             private final TextView titleTextView;
             private final TextView contentTextView;
             private final TextView ownerTextView;
+            private final TextView post_time_view;
             public LinearLayout in_post;
             public Button delete_button;
             public Button check_button;
@@ -223,6 +224,7 @@ public class ManagerHomeActivity extends BaseActivity {
                 delete_button = itemView.findViewById(R.id.id_btn_del);
                 check_button = itemView.findViewById(R.id.id_btn_jug);
                 in_post = itemView.findViewById(R.id.id_in_post);
+                post_time_view = itemView.findViewById(R.id.id_post_time);
             }
 
             public void bind(Posts post) {
@@ -230,6 +232,7 @@ public class ManagerHomeActivity extends BaseActivity {
                 titleTextView.setText(post.getTitle());
                 contentTextView.setText(post.getContext());
                 ownerTextView.setText(post.getOwner());
+                post_time_view.setText(post.getTime());
                 itemView.setTag(R.id.this_post_id, post.getId());
             }
         }
@@ -333,20 +336,13 @@ public class ManagerHomeActivity extends BaseActivity {
 
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void updateList(List<Posts> response) {
-        postsList.clear();
-        postsList.addAll(response);
-        eSwipeRefreshLayout.setRefreshing(false);
-        eSwipeRefreshLayout.setPullUpRefreshing(false);
-    }
 
     private void initView() {
         tv_all = findViewById(R.id.id_tv_all);
         tv_checked = findViewById(R.id.id_tv_checked);
         tv_unchecked = findViewById(R.id.id_tv_unchecked);
-        Home = findViewById(R.id.id_Home);
-        ManagerCenter = findViewById(R.id.id_userCenter);
+        Home = findViewById(R.id.id_Manager_Home);
+        ManagerCenter = findViewById(R.id.id_manager_Center);
         eSwipeRefreshLayout = findViewById(R.id.id_swiperefresh);
         eRecyclerView = findViewById(R.id.id_recyclerview);
         postsBiz = new PostsBiz();
@@ -563,26 +559,6 @@ public class ManagerHomeActivity extends BaseActivity {
                         }
                     });
                 }
-            }
-        });
-    }
-    private void loadAll() {
-        startLoadingProgress();
-        postsBiz.getAllOfAllPosts(new CommonCallback<List<Posts>>() {
-            @Override
-            public void onError(Exception e) {
-                stopLoadingProgress();
-                //T.showToast(e.getMessage());
-                eSwipeRefreshLayout.setRefreshing(false);
-                eSwipeRefreshLayout.setPullUpRefreshing(false);
-            }
-
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void onSuccess(List<Posts> response) {
-                stopLoadingProgress();
-                //T.showToast("刷新成功！");
-                updateList(response);
             }
         });
     }

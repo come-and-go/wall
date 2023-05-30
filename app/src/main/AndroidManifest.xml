@@ -18,7 +18,14 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- Android 11 软件包可见性适配 -->
+    <queries>
+
+        <!-- 调起其他页面意图：Intent.ACTION_VIEW -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+        </intent>
+    </queries>
 
     <application
         android:name=".MyApp"
@@ -27,21 +34,44 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Wall"
         android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
-        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
-        <service android:name="com.amap.api.location.APSService"></service>
-        <meta-data android:name="com.amap.api.v2.apikey"
-            android:value="86dd67343bbc125742dc3ca11d217906">
-        </meta-data>
+        <activity
+            android:name=".AddCommentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LookMycommentsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LookMypostsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserCenterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserPostDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ManagerPostDetailsActivity"
+            android:exported="false" />
+
+        <service android:name="com.amap.api.location.APSService" />
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="86dd67343bbc125742dc3ca11d217906" />
+
         <activity
             android:name=".MapActivity"
             android:exported="false" />
-
         <activity
             android:name=".ManagerCenterActivity"
             android:exported="false" />
@@ -49,8 +79,9 @@
             android:name=".ManagerHomeActivity"
             android:exported="true"
             android:label="@string/title_activity_home" />
-        <activity android:name=".BaseActivity"
-            android:exported="false"/>
+        <activity
+            android:name=".BaseActivity"
+            android:exported="false" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
@@ -76,14 +107,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
-
     </application>
-    <!-- Android 11 软件包可见性适配 -->
-    <queries>
-        <!-- 调起其他页面意图：Intent.ACTION_VIEW -->
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-        </intent>
 
-    </queries>
 </manifest>

@@ -1,13 +1,9 @@
 package com.example.wall;
 
-import com.example.wall.ui.vo.Posts;
-import com.google.gson.JsonObject;
-
-
-public class PostResponse {
+public class ReadCommentsResponse {
     private int code;
     private String error_msg;
-    private Posts data;
+    private InnerCommentsData data;
 
 
     public int getCode() {
@@ -25,6 +21,12 @@ public class PostResponse {
     public void setError_msg(String error_msg) {
         this.error_msg = error_msg;
     }
-    public Posts getData(){return data;}
 
+    public InnerCommentsData getData() {
+        return data;
+    }
+
+    public void setData(InnerCommentsData data) {
+        this.data = data;
+    }
 }

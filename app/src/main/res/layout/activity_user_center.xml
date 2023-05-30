@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.wall.ManagerCenterActivity">
+    tools:context="com.example.wall.UserCenterActivity">
 
 
 
@@ -31,17 +31,17 @@
         <TextView
             android:textColor="@color/purple"
             android:textStyle="bold"
-            android:text="管理员:"
+            android:text="用户:"
             android:layout_gravity="center"
             android:layout_marginLeft="35sp"
             android:textSize="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
-            android:id="@+id/id_m_center_username"
+            android:id="@+id/id_u_center_username"
             android:textColor="@color/purple"
             android:textStyle="bold"
-            android:text="ksl"
+            android:text="zmh"
             android:layout_gravity="center"
             android:layout_marginLeft="35sp"
             android:textSize="20dp"
@@ -49,13 +49,63 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
+
     <View
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="30dp"
         android:background="@color/white"/>
 
     <LinearLayout
-        android:id="@+id/m_change_my_pass"
+        android:id="@+id/tv_my_posts"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20sp"
+        android:orientation="vertical"
+        android:background="@drawable/item_base_task">
+        <TextView
+            android:text="我的发帖"
+            android:layout_marginLeft="20sp"
+            android:layout_marginTop="12dp"
+            android:textColor="#555151"
+            android:layout_width="wrap_content"
+            android:textSize="25dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/white"/>
+
+    <LinearLayout
+        android:id="@+id/tv_my_comments"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20sp"
+        android:orientation="vertical"
+        android:background="@drawable/item_base_task">
+        <TextView
+            android:text="我的评论"
+            android:layout_marginLeft="20sp"
+            android:layout_marginTop="12dp"
+            android:textColor="#555151"
+            android:layout_width="wrap_content"
+            android:textSize="25dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="@color/white"/>
+    <LinearLayout
+        android:id="@+id/u_change_my_pass"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
@@ -79,7 +129,7 @@
         android:background="@color/white"/>
 
     <LinearLayout
-        android:id="@+id/m_log_out"
+        android:id="@+id/u_log_out"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
@@ -100,21 +150,22 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="410dp"
+        android:layout_height="220dp"
         android:background="@color/white"/>
     <!--    1296db-->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
         <LinearLayout
-            android:layout_marginLeft="80dp"
+            android:layout_marginLeft="40dp"
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/white">
 
             <ImageView
-                android:id="@+id/id_m_home"
+                android:id="@+id/id_u_userhome"
                 android:layout_width="70dp"
                 android:layout_height="43dp"
                 android:layout_gravity="center"
@@ -125,19 +176,40 @@
                 android:layout_gravity="center"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:text="全部帖子"/>
+                android:text="附近帖子"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginLeft="60dp"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/id_newPost"
+                android:layout_width="70dp"
+                android:layout_height="43dp"
+                android:layout_gravity="center"
+                android:src="@drawable/common_add" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:text="我要发帖"/>
         </LinearLayout>
 
 
         <LinearLayout
-            android:layout_marginLeft="120dp"
+            android:layout_marginLeft="60dp"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#88A573D6">
+            android:background="#CDB0E7">
 
             <ImageView
-                android:id="@+id/id_m_usercenter"
+                android:id="@+id/id_u_usercenter"
                 android:layout_width="56dp"
                 android:layout_height="44dp"
                 android:layout_gravity="center"
