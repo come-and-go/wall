@@ -79,7 +79,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class PostActivity extends AppCompatActivity {
+public class CommentActivity extends AppCompatActivity {
 
     private Button mBtnReturn;
     private Button mBtnPost;
@@ -99,56 +99,34 @@ public class PostActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
+        setContentView(R.layout.activity_comment);
 
-        mBtnReturn = findViewById(R.id.btn_return);
-        mBtnPost = findViewById(R.id.btn_post);
-        mEtTitle = findViewById(R.id.et_title);
-        mEtText = findViewById(R.id.et_text);
+        mBtnReturn = findViewById(R.id.btn_return1);
+        mBtnPost = findViewById(R.id.btn_post1);
+        mEtText = findViewById(R.id.et_text1);
 
-        Button chooseVideo = (Button) findViewById(R.id.btn_video);
-        Button takePhoto = (Button) findViewById(R.id.btn_photo);
-        Button chooseFromAlbum = (Button) findViewById(R.id.btn_album);
-        picture = (ImageView) findViewById(R.id.image);
+        Button chooseVideo = (Button) findViewById(R.id.btn_video1);
+        Button takePhoto = (Button) findViewById(R.id.btn_photo1);
+        Button chooseFromAlbum = (Button) findViewById(R.id.btn_album1);
+        picture = (ImageView) findViewById(R.id.image1);
         mBtnReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = null;
-                intent = new Intent(PostActivity.this, LoginActivity.class);
+                intent = new Intent(CommentActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
 
-        // 地址定位权限
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
-        }
-
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE); // 位置
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        LocationListener mLocationListener = new MyLocationListener();
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-        Location mlocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); // 网络
-
-        Log.d("111111LoctianActivity>>", "mLocationManager>>:" + mLocationManager);
-        Log.d("111111LoctianActivity>>", "mlocation>>:" + mlocation);
 
 
         mBtnPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String username = all_username;
-                String title = mEtTitle.getText().toString();
                 String text = mEtText.getText().toString();
+                String post_id = getIntent().getStringExtra("post_id");
                 int content_type = 0;
-                double location_x = mlocation.getLongitude() * 10000;//jingdu
-                double location_y = mlocation.getLatitude() * 10000;//weidu
-
-                Log.d("111111LoctianActivity>>", "mlocation>>:" + location_x);
-                Log.d("111111LoctianActivity>>", "mlocation>>:" + location_y);
 
                 File file = null;
                 if (type==2)
@@ -170,7 +148,7 @@ public class PostActivity extends AppCompatActivity {
                                 inputStream.close();
                                 outputStream.close();
                                 // 通知系统多媒体扫描该文件
-                                MediaScannerConnection.scanFile(PostActivity.this, new String[]{file.getPath()}, null, null);
+                                MediaScannerConnection.scanFile(CommentActivity.this, new String[]{file.getPath()}, null, null);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -205,7 +183,7 @@ public class PostActivity extends AppCompatActivity {
                                     outputStream.flush();
                                 }
                                 // 通知系统多媒体扫描该文件，否则会导致拍摄出来的图片或者视频没有及时显示到相册中，而需要通过重启手机才能看到
-                                MediaScannerConnection.scanFile(PostActivity.this, new String[]{file.getPath()}, null, null);
+                                MediaScannerConnection.scanFile(CommentActivity.this, new String[]{file.getPath()}, null, null);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -216,11 +194,9 @@ public class PostActivity extends AppCompatActivity {
                 UpdateImageApi api = new UpdateImageApi();
                 final JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("title", title);
+                    jsonObject.put("post_id", post_id);
                     jsonObject.put("content_type", content_type);
                     jsonObject.put("text", text);
-                    jsonObject.put("location_x", location_x);
-                    jsonObject.put("location_y", location_y);
                     jsonObject.put("ownername", username);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -247,7 +223,7 @@ public class PostActivity extends AppCompatActivity {
                             .addFormDataPart("post", jsonString, jsonRequestBody)
                             .build();
                 }
-                EasyHttp.post(PostActivity.this)
+                EasyHttp.post(CommentActivity.this)
                         .api(api)
                         .body(requestBody)
 //                        .body(new JsonBody(jsonString))
@@ -267,13 +243,13 @@ public class PostActivity extends AppCompatActivity {
 
                             @Override
                             public void onSucceed(Void result) {
-                                bitmap = null;
-                                Toast.makeText(PostActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
+
+                                Toast.makeText(CommentActivity.this, "上传成功", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void onFail(Exception e) {
-                                Toast.makeText(PostActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(CommentActivity.this, "上传失败", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -377,47 +353,16 @@ public class PostActivity extends AppCompatActivity {
 
         });
 
-        if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            // 更新当前位置
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 100, new LocationListener() {
-
-                //在用户禁用具有定位功能的硬件时被调用
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                // 位置服务可用
-                // 在用户启动具有定位功能的硬件是被调用
-                @Override
-                public void onProviderEnabled(String provider) {
-                    // TODO Auto-generated method stub
-                }
-
-                //在提供定位功能的硬件状态改变是被调用
-                @Override
-                public void onProviderDisabled(String provider) {
-                    // TODO Auto-generated method stub
-                }
-
-                // 位置改变
-                @Override
-                public void onLocationChanged(Location location) {
-                    // TODO Auto-generated method stub
-                }
-            });
-        }
 
         chooseVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //动态申请读取SD卡权限
-                if (ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(PostActivity.this, new String[]{
+                if (ContextCompat.checkSelfPermission(CommentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(CommentActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(CommentActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(CommentActivity.this, new String[]{
                             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 2);
                 } else {
                     openVideo();
@@ -434,10 +379,10 @@ public class PostActivity extends AppCompatActivity {
 
 
                 //动态申请读取SD卡权限
-                if (ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-                        || ContextCompat.checkSelfPermission(PostActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(PostActivity.this, new String[]{
+                if (ContextCompat.checkSelfPermission(CommentActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(CommentActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(CommentActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(CommentActivity.this, new String[]{
                             Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, 1);
                 } else {
                     openAlbum();
@@ -466,7 +411,7 @@ public class PostActivity extends AppCompatActivity {
                 // 之所以要进行这样一层转换，是因为从Android 7.0系统开始，直接使用本地真实路径的Uri被认为是不安全的，会抛出一个FileUriExposedException 异常
                 // 而FileProvider则是-种特殊的内容提供器，它使用了和内容提供器类似的机制来对数据进行保护，可以选择性地将封装过的Uri共享给外部，从而提高了应用的安全性
                 if (Build.VERSION.SDK_INT >= 24) {
-                    imageUri = FileProvider.getUriForFile(PostActivity.this, "com.example.wall", outputImage);
+                    imageUri = FileProvider.getUriForFile(CommentActivity.this, "com.example.wall", outputImage);
                 } else {
                     imageUri = Uri.fromFile(outputImage);
                 }
