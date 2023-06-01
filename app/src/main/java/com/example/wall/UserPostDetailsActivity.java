@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,8 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
@@ -33,21 +32,26 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
+
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 public class UserPostDetailsActivity extends BaseActivity {
 
     String post_id;
-    String from_where;
+    public static String from_where_to_pdetail;
     ImageView Back_Image;
     TextView post_title;
     Button add_comment;
@@ -57,13 +61,13 @@ public class UserPostDetailsActivity extends BaseActivity {
     List<CommentForPost> CommentsList;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_post_details);
         Intent intent = getIntent();
         post_id = intent.getStringExtra("post_id");
-        from_where = intent.getStringExtra("from");
         setTitle("帖子详情");
         initView();
         initEvent();
@@ -73,8 +77,6 @@ public class UserPostDetailsActivity extends BaseActivity {
 
     public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-        private static int have_video = 0;
-        private static String video_url;
         private static final int VIEW_TYPE_SPECIAL = 0; // 特殊Item的视图类型
         private static final int VIEW_TYPE_NORMAL = 1; // 普通Item的视图类型
 
@@ -121,17 +123,6 @@ public class UserPostDetailsActivity extends BaseActivity {
                 // 绑定特殊Item的数据到ViewHolder
                 SpecialCommentViewHolder specialHolder = (SpecialCommentViewHolder) holder;
                 specialHolder.bind(inner_post);
-                if(have_video == 1){
-                    VideoView videoView = holder.itemView.findViewById(R.id.id_m_in_post_video);
-                    videoView.setVideoURI(Uri.parse(video_url));
-                    videoView.setVisibility(View.VISIBLE);
-                    videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            videoView.start();
-                        }
-                    });
-                }
             } else if (holder instanceof NormalCommentViewHolder) {
                 // 绑定普通Item的数据到ViewHolder
                 int commentPosition = position;
@@ -153,21 +144,25 @@ public class UserPostDetailsActivity extends BaseActivity {
             }
             return count;
         }
-
         // 特殊Item的ViewHolder
         private class SpecialCommentViewHolder extends RecyclerView.ViewHolder {
+
             // 定义特殊Item的视图组件
+            private final SimpleExoPlayer player;
+            private final PlayerView playerView;
             private final TextView contentTextView;
             private final ImageView contentImageView;
-            private final VideoView contentVideoView;
             private final TextView ownerTextView;
             private final TextView post_time_view;
             public SpecialCommentViewHolder(View itemView) {
                 super(itemView);
                 // 初始化特殊Item的视图组件
+                player = ExoPlayerFactory.newSimpleInstance(itemView.getContext());
+                playerView = itemView.findViewById(R.id.id_m_in_post_video);
+                playerView.setPlayer(player);
+
                 contentTextView = itemView.findViewById(R.id.id_m_in_post_content);
                 contentImageView = itemView.findViewById(R.id.id_m_in_post_image);
-                contentVideoView = itemView.findViewById(R.id.id_m_in_post_video);
                 ownerTextView = itemView.findViewById(R.id.id_m_in_post_author);
                 post_time_view = itemView.findViewById(R.id.id_m_in_post_time);
             }
@@ -179,8 +174,18 @@ public class UserPostDetailsActivity extends BaseActivity {
                     String url = inner_post.getMedia_url();
                     if(url.contains("mp4")){
                         Log.d("vediourl", url);
-                        have_video = 1;
-                        video_url = url;
+                        playerView.setVisibility(View.VISIBLE);
+                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) playerView.getLayoutParams();
+                        layoutParams.width = 1000; // 设置宽度
+                        layoutParams.height = 2000; // 设置高度
+                        playerView.setLayoutParams(layoutParams);
+                        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(Util.getUserAgent(itemView.getContext(), "wall"));
+                         //创建视频媒体源
+                        MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(url));
+                         //准备视频播放器
+                        player.prepare(videoSource);
+                        // 开始播放视频
+                        player.setPlayWhenReady(true);
                     }
                     else {
                         Glide.with(getApplicationContext())
@@ -212,12 +217,19 @@ public class UserPostDetailsActivity extends BaseActivity {
         // 普通Item的ViewHolder
         private class NormalCommentViewHolder extends RecyclerView.ViewHolder {
             // 定义普通Item的视图组件
+
+            private final SimpleExoPlayer player;
+            private final PlayerView playerView;
             private final TextView contentTextView;
             private final ImageView contentImageView;
             private final TextView ownerTextView;
             private final TextView post_time_view;
             public NormalCommentViewHolder(View itemView) {
                 super(itemView);
+                player = ExoPlayerFactory.newSimpleInstance(itemView.getContext());
+                playerView = itemView.findViewById(R.id.id_u_comment_video);
+                playerView.setPlayer(player);
+
                 contentTextView = itemView.findViewById(R.id.id_u_comment_content);
                 contentImageView = itemView.findViewById(R.id.id_u_comment_image);
                 ownerTextView = itemView.findViewById(R.id.id_u_comment_author);
@@ -228,25 +240,42 @@ public class UserPostDetailsActivity extends BaseActivity {
                 contentTextView.setText(comment.getContext());
                 if(comment.getContent_type() == 1) {
                     String url = comment.getMedia_url();
-                    Glide.with(getApplicationContext())
-                            .asBitmap()
-                            .load(url)
-                            .override(1000, 1000)//图片大小
-                            .into(new CustomTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
-                                    Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), resource);
-                                    contentImageView.setImageDrawable(drawable);
-                                    contentImageView.setVisibility(View.VISIBLE);
-                                }
+                    if(url.contains("mp4")){
+                        Log.d("vediourl", url);
+                        playerView.setVisibility(View.VISIBLE);
+                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) playerView.getLayoutParams();
+                        layoutParams.width = 1000; // 设置宽度
+                        layoutParams.height = 2000; // 设置高度
+                        playerView.setLayoutParams(layoutParams);
+                        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(Util.getUserAgent(itemView.getContext(), "wall"));
+                        // 创建视频媒体源
+                        MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(url));
+                        // 准备视频播放器
+                        player.prepare(videoSource);
+//                        // 开始播放视频
+                        player.setPlayWhenReady(true);
+                    }
+                    else {
+                        Glide.with(getApplicationContext())
+                                .asBitmap()
+                                .load(url)
+                                .override(1000, 1000)//图片大小
+                                .into(new CustomTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
+                                        Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), resource);
+                                        contentImageView.setImageDrawable(drawable);
+                                        contentImageView.setVisibility(View.VISIBLE);
+                                    }
 
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
 
-                                }
+                                    }
 
 
-                            });
+                                });
+                    }
                 }
                 ownerTextView.setText(comment.getOwner());
                 post_time_view.setText(comment.getDeliver_time());
@@ -258,7 +287,7 @@ public class UserPostDetailsActivity extends BaseActivity {
     private void get_post_comment(String post_id) {
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post").newBuilder();
         urlBuilder.addQueryParameter("post_id", post_id);
         String url = urlBuilder.build().toString();
 
@@ -285,7 +314,7 @@ public class UserPostDetailsActivity extends BaseActivity {
 
                     // 获取评论
                     OkHttpClient client = new OkHttpClient();
-                    HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/comment").newBuilder();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "comment").newBuilder();
                     urlBuilder.addQueryParameter("page_num", "1");
                     urlBuilder.addQueryParameter("page_size", String.valueOf(1000000));
                     urlBuilder.addQueryParameter("post_id", post_id);
@@ -350,11 +379,14 @@ public class UserPostDetailsActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent();
-                if(from_where.equals("user_home")) {
+                if(from_where_to_pdetail.equals("user_home")) {
                     intent = new Intent(UserPostDetailsActivity.this, UserHomeActivity.class);
                 }
-                else if(from_where.equals("look_post")){
+                else if(from_where_to_pdetail.equals("look_post")){
                     intent = new Intent(UserPostDetailsActivity.this, LookMypostsActivity.class);
+                }
+                else if(from_where_to_pdetail.equals("map")){
+                    intent = new Intent(UserPostDetailsActivity.this, MapActivity.class);
                 }
                 else{
                     intent = new Intent(UserPostDetailsActivity.this, LookMycommentsActivity.class);
@@ -365,7 +397,7 @@ public class UserPostDetailsActivity extends BaseActivity {
         add_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(UserPostDetailsActivity.this, AddCommentActivity.class);
+                Intent intent = new Intent(UserPostDetailsActivity.this, CommentActivity.class);
                 intent.putExtra("post_id", post_id);  // 替换为实际的键值对
                 startActivity(intent);
             }

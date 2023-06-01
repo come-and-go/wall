@@ -1,6 +1,7 @@
 package com.example.wall;
 
 import static com.example.wall.LoginActivity.all_username;
+import static com.example.wall.UserPostDetailsActivity.from_where_to_pdetail;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +30,13 @@ import com.example.wall.ui.view.SwipeRefresh;
 import com.example.wall.ui.view.SwipeRefreshLayout;
 import com.example.wall.ui.vo.CommentForPost;
 import com.example.wall.ui.vo.Posts;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -62,7 +71,7 @@ public class LookMycommentsActivity extends BaseActivity {
         setTitle("我的评论");
         initView();
         initEvent();
-        get_my_comment(1);;
+        get_my_comment(1);
     }
 
     public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -78,7 +87,7 @@ public class LookMycommentsActivity extends BaseActivity {
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
                 // 创建普通Item的ViewHolder
-            View normalView = inflater.inflate(R.layout.item_comment_manager, parent, false);
+            View normalView = inflater.inflate(R.layout.item_my_comment, parent, false);
             return new NormalCommentViewHolder(normalView);
         }
 
@@ -99,7 +108,7 @@ public class LookMycommentsActivity extends BaseActivity {
                     String comment_id = (String) vppp.getTag(R.id.id_my_comment_id);
                     Log.d("todeid",comment_id);
                     OkHttpClient client = new OkHttpClient();
-                    HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/comment/delete").newBuilder();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "comment/delete").newBuilder();
                     //urlBuilder.addQueryParameter("post_id", this_id);
                     String url = urlBuilder.build().toString();
 
@@ -143,7 +152,7 @@ public class LookMycommentsActivity extends BaseActivity {
                     Log.d("parent_id", parent_id);
                     Intent intent = new Intent(LookMycommentsActivity.this, UserPostDetailsActivity.class);
                     intent.putExtra("post_id", parent_id);
-                    intent.putExtra("from", "look_comment");
+                    from_where_to_pdetail = "look_comment";
                     startActivity(intent);
                 }
             });
@@ -157,6 +166,8 @@ public class LookMycommentsActivity extends BaseActivity {
         // 普通Item的ViewHolder
         private class NormalCommentViewHolder extends RecyclerView.ViewHolder {
             // 定义普通Item的视图组件
+            private final SimpleExoPlayer player;
+            private final PlayerView playerView;
             private final TextView contentTextView;
             private final ImageView contentImageView;
             private final TextView ParentTextView;
@@ -165,6 +176,9 @@ public class LookMycommentsActivity extends BaseActivity {
             public Button delete_button;
             public NormalCommentViewHolder(View itemView) {
                 super(itemView);
+                player = ExoPlayerFactory.newSimpleInstance(itemView.getContext());
+                playerView = itemView.findViewById(R.id.id_my_comment_video);
+                playerView.setPlayer(player);
                 contentTextView = itemView.findViewById(R.id.id_my_comment_content);
                 contentImageView = itemView.findViewById(R.id.id_my_comment_image);
                 ParentTextView = itemView.findViewById(R.id.id_my_comment_parent);
@@ -177,25 +191,42 @@ public class LookMycommentsActivity extends BaseActivity {
                 contentTextView.setText(comment.getContext());
                 if(comment.getContent_type() == 1) {
                     String url = comment.getMedia_url();
-                    Glide.with(getApplicationContext())
-                            .asBitmap()
-                            .load(url)
-                            .override(1000, 1000)//图片大小
-                            .into(new CustomTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
-                                    Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), resource);
-                                    contentImageView.setImageDrawable(drawable);
-                                    contentImageView.setVisibility(View.VISIBLE);
-                                }
+                    if(url.contains("mp4")){
+                        Log.d("vediourl", url);
+                        playerView.setVisibility(View.VISIBLE);
+                        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) playerView.getLayoutParams();
+                        layoutParams.width = 1000; // 设置宽度
+                        layoutParams.height = 2000; // 设置高度
+                        playerView.setLayoutParams(layoutParams);
+                        DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(Util.getUserAgent(itemView.getContext(), "wall"));
+                        // 创建视频媒体源
+                        MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(url));
+                        // 准备视频播放器
+                        player.prepare(videoSource);
+                        // 开始播放视频
+                        player.setPlayWhenReady(true);
+                    }
+                    else {
+                        Glide.with(getApplicationContext())
+                                .asBitmap()
+                                .load(url)
+                                .override(1000, 1000)//图片大小
+                                .into(new CustomTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
+                                        Drawable drawable = new BitmapDrawable(getApplicationContext().getResources(), resource);
+                                        contentImageView.setImageDrawable(drawable);
+                                        contentImageView.setVisibility(View.VISIBLE);
+                                    }
 
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
 
-                                }
+                                    }
 
 
-                            });
+                                });
+                    }
                 }
                 ParentTextView.setText(comment.getParent_post_id());
                 post_time_view.setText(comment.getDeliver_time());
@@ -252,7 +283,7 @@ public class LookMycommentsActivity extends BaseActivity {
     private void get_my_comment(int page_num) {
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/comment/mycomment").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd)+ "comment/mycomment").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("username", all_username);
@@ -301,7 +332,7 @@ public class LookMycommentsActivity extends BaseActivity {
     private void get_up_my_comment(int page_num) {
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/comment/mycomment").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "comment/mycomment").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("username", all_username);

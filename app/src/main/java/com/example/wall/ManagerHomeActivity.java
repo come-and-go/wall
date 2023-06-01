@@ -107,7 +107,7 @@ public class ManagerHomeActivity extends BaseActivity {
                     String this_id = (String) vppp.getTag(R.id.this_post_id);
                     Log.d("todeid",this_id);
                     OkHttpClient client = new OkHttpClient();
-                    HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/delete").newBuilder();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post/delete").newBuilder();
                     //urlBuilder.addQueryParameter("post_id", this_id);
                     String url = urlBuilder.build().toString();
 
@@ -159,7 +159,7 @@ public class ManagerHomeActivity extends BaseActivity {
                     String this_id = (String) vppp.getTag(R.id.this_post_id);
                     Log.d("tochid",this_id);
                     OkHttpClient client = new OkHttpClient();
-                    HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/check").newBuilder();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post/check").newBuilder();
                     String url = urlBuilder.build().toString();
 
                     RequestBody requestBody = new FormBody.Builder()
@@ -357,7 +357,7 @@ public class ManagerHomeActivity extends BaseActivity {
     private void get_data(int page_num){
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd)+ "post").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("location_x", "0.0");
@@ -410,7 +410,7 @@ public class ManagerHomeActivity extends BaseActivity {
     private void get_up_data(int page_num){
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("location_x", "0.0");
@@ -463,7 +463,7 @@ public class ManagerHomeActivity extends BaseActivity {
     private void get_cuc_data(int page_num, int if_checked){
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/check").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post/check").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("checked", String.valueOf(if_checked));
@@ -514,7 +514,7 @@ public class ManagerHomeActivity extends BaseActivity {
     private void get_up_cuc_data(int page_num, int if_checked){
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/check").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post/check").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("checked", String.valueOf(if_checked));

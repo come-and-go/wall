@@ -1,6 +1,7 @@
 package com.example.wall;
 
 import static com.example.wall.LoginActivity.all_username;
+import static com.example.wall.UserPostDetailsActivity.from_where_to_pdetail;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -89,7 +90,7 @@ public class LookMypostsActivity extends BaseActivity {
                     Intent intent = new Intent(LookMypostsActivity.this, UserPostDetailsActivity.class);
                     Log.d("todetail",this_id);
                     intent.putExtra("post_id", this_id);
-                    intent.putExtra("from", "look_post");
+                    from_where_to_pdetail = "look_post";
                     startActivity(intent);
                 }
             });
@@ -103,7 +104,7 @@ public class LookMypostsActivity extends BaseActivity {
                     String this_id = (String) vppp.getTag(R.id.this_post_id);
                     Log.d("todeid",this_id);
                     OkHttpClient client = new OkHttpClient();
-                    HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/delete").newBuilder();
+                    HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post/delete").newBuilder();
                     //urlBuilder.addQueryParameter("post_id", this_id);
                     String url = urlBuilder.build().toString();
 
@@ -229,7 +230,7 @@ public class LookMypostsActivity extends BaseActivity {
     private void get_my_post(int page_num){
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/mypost").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post/mypost").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("username", all_username);
@@ -280,7 +281,7 @@ public class LookMypostsActivity extends BaseActivity {
     private void get_up_my_post(int page_num){
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post/mypost").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post/mypost").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("username", all_username);

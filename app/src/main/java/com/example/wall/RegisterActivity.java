@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Request request = new Request.Builder()
                             //.post(params.build())
                             .post(requestBody)
-                            .url("http://192.168.0.124:8086/api/user/register")
+                            .url(getResources().getString(R.string.ipadd) + "user/register")
                             .build();
                     okhttp3.Call call = client.newCall(request);
                     call.enqueue(new Callback() {

@@ -72,11 +72,11 @@ public class LoginActivity extends AppCompatActivity {
                     MediaType mMediaType = MediaType.parse("application/json; charset=utf-8");
                     final RequestBody requestBody = RequestBody.create(mMediaType, jsonObject.toString());
 
-
+                    Log.d("ip",getResources().getString(R.string.ipadd)+ "user/login");
                     Request request = new Request.Builder()
                             //.post(params.build())
                             .post(requestBody)
-                            .url("http://192.168.0.124:8086/api/user/login")
+                            .url(getResources().getString(R.string.ipadd) + "user/login")
 
                             //.url("http://192.168.43.214:8086/api/user/login")
                             .build();
@@ -135,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = null;
-                intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                intent = new Intent(LoginActivity.this, CommentActivity.class);
                 startActivity(intent);
             }
         });

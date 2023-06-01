@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+
+    tools:context=".CommentActivity"
+    tools:ignore="MissingDefaultResource">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+
+        >
+        <Button
+            android:id="@+id/btn_return1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="返回"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_left"
+            />
+        <TextView
+            android:id="@+id/tv_2"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:text="评论"
+            android:textColor="#000000"
+            android:textSize="30sp"
+            android:gravity="center"
+            android:layout_marginLeft="50dp"
+
+            />
+        <Button
+            android:id="@+id/btn_post1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="发布"
+            android:layout_gravity="center"
+            android:background="@drawable/btn_right"
+            android:layout_marginLeft="50dp"
+
+            />
+    </LinearLayout>
+
+
+
+
+    <EditText
+        android:id="@+id/et_text1"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:hint="请输入文字"
+        android:padding="5dp"
+
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_text"
+        />
+
+    <ImageView
+        android:id="@+id/image1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_above="@id/btn_photo"
+        />
+
+
+    <Button
+        android:id="@+id/btn_photo1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="拍照"
+        android:textSize="20sp"
+        tools:ignore="MissingConstraints" />
+    <Button
+        android:id="@+id/btn_album1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="相册"
+        android:textSize="20sp"
+        tools:ignore="MissingConstraints" />
+    <Button
+        android:id="@+id/btn_video1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="视频"
+        android:textSize="20sp"
+        tools:ignore="MissingConstraints" />
+
+
+</LinearLayout>

@@ -2,6 +2,7 @@ package com.example.wall;
 
 
 import static com.example.wall.PostActivity.PERMISSION_REQUEST_CODE;
+import static com.example.wall.UserPostDetailsActivity.from_where_to_pdetail;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -64,7 +65,7 @@ public class UserHomeActivity extends BaseActivity {
     RecyclerView eRecyclerView;
     PostsBiz postsBiz;
     LatLng l = null;
-    public static int all_distance = 100;
+    public static int all_distance;
     List<Posts> postsList;
     private int page_numc = 1;
 
@@ -99,6 +100,11 @@ public class UserHomeActivity extends BaseActivity {
         setTitle("帖子列表");
         initView();
         initEvent();
+        if(all_distance>2000 || all_distance<100){
+            all_distance = 100;
+        }
+        seekbar.setProgress(all_distance);
+        map_distance.setText(String.valueOf(all_distance));
         get_data(1);
     }
 
@@ -131,7 +137,7 @@ public class UserHomeActivity extends BaseActivity {
                     Intent intent = new Intent(UserHomeActivity.this, UserPostDetailsActivity.class);
                     Log.d("todetail",this_id);
                     intent.putExtra("post_id", this_id);
-                    intent.putExtra("from", "user_home");
+                    from_where_to_pdetail = "user_home";
                     startActivity(intent);
                 }
             });
@@ -307,7 +313,7 @@ public class UserHomeActivity extends BaseActivity {
         }
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("location_x", String.valueOf(l.longitude*10000));
@@ -362,7 +368,7 @@ public class UserHomeActivity extends BaseActivity {
             have_posts.empty();
         }
         OkHttpClient client = new OkHttpClient();
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
         urlBuilder.addQueryParameter("page_size", "10");
         urlBuilder.addQueryParameter("location_x", String.valueOf(l.longitude*10000));

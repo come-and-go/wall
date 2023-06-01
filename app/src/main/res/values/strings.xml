@@ -1,4 +1,6 @@
 <resources>
+    <string name="ipadd">http://192.168.0.117:8086/api/</string>
+
     <string name="app_name">wall</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_home">Home</string>

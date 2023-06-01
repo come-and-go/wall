@@ -30,6 +30,7 @@ public final class UpdateImageApi implements IRequestApi , IRequestType {//IRequ
         return "/api/post";
     }
 
+
     /** 本地图片 */
     private File image;
 

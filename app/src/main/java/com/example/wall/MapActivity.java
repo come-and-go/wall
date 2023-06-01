@@ -1,5 +1,7 @@
 package com.example.wall;
 
+import static com.example.wall.UserPostDetailsActivity.from_where_to_pdetail;
+import static com.example.wall.UserHomeActivity.all_distance;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +17,7 @@ import android.transition.Transition;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,20 +62,21 @@ public class MapActivity extends AppCompatActivity {
     private AMap aMap;
     private MyLocationStyle myLocationStyle;
     private SeekBar seekbar;
-    private Button refresh;
+    private ImageView refresh;
+    private ImageView change_list;
     private TextView textView;
-    private int distance = 100;
     LatLng l = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        textView = (TextView) findViewById(R.id.map_distance);
-        seekbar = (SeekBar) findViewById(R.id.map_seekbar);
+        textView = (TextView) findViewById(R.id.map_distance1);
+        seekbar = (SeekBar) findViewById(R.id.map_seekbar1);
+        change_list = findViewById(R.id.btn_changeList);
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState); //此方法必须重写
-        refresh = findViewById(R.id.btn_refresh);
+        refresh = findViewById(R.id.btn_refresh1);
 
 
         // 地址定位权限
@@ -95,6 +99,11 @@ public class MapActivity extends AppCompatActivity {
         } else {
             l = new LatLng(mlocation.getLatitude(), mlocation.getLongitude());
         }
+        if(all_distance>2000 || all_distance<100){
+            all_distance = 100;
+        }
+        seekbar.setProgress(all_distance);
+        textView.setText(String.valueOf(all_distance));
 
         aMap = mapView.getMap();
 
@@ -123,6 +132,14 @@ public class MapActivity extends AppCompatActivity {
             }
         });
 
+        change_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MapActivity.this, UserHomeActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -140,9 +157,9 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //Toast.makeText(mContext, "放开SeekBar", Toast.LENGTH_SHORT).show();
-                distance = seekBar.getProgress();
-                Log.d("distance",String.valueOf(distance));
-                textView.setText(String.valueOf(distance));
+                all_distance = seekBar.getProgress();
+                Log.d("distance",String.valueOf(all_distance));
+                textView.setText(String.valueOf(all_distance));
 
 
 
@@ -153,15 +170,15 @@ public class MapActivity extends AppCompatActivity {
 
 
 
-
-
         aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 String title = marker.getTitle();
                 Log.d("111111MapActivity>>", "mlocation>>:" + title);
                 Intent intent = null;
-                intent = new Intent(MapActivity.this, LoginActivity.class);
+                intent = new Intent(MapActivity.this, UserPostDetailsActivity.class);
+                intent.putExtra("post_id", title);
+                from_where_to_pdetail = "map";
                 startActivity(intent);
                 return false;
             }
@@ -214,7 +231,7 @@ public class MapActivity extends AppCompatActivity {
         CircleOptions circleOptions = new CircleOptions();
         circleOptions
                 .center(l)
-                .radius(distance)
+                .radius(all_distance)
                 .fillColor(Color.argb(20, 0, 0, 100))
                 .strokeColor(Color.argb(100, 0, 0, 100))
                 .strokeWidth(4);
@@ -227,12 +244,12 @@ public class MapActivity extends AppCompatActivity {
 
         OkHttpClient client = new OkHttpClient();
 
-        HttpUrl.Builder urlBuilder = HttpUrl.parse("http://192.168.0.124:8086/api/post").newBuilder();
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "post").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(1));
         urlBuilder.addQueryParameter("page_size", "100");
         urlBuilder.addQueryParameter("location_x", String.valueOf(l.longitude*10000));
         urlBuilder.addQueryParameter("location_y", String.valueOf(l.latitude*10000));
-        urlBuilder.addQueryParameter("distance", String.valueOf(distance));
+        urlBuilder.addQueryParameter("distance", String.valueOf(all_distance));
         String url = urlBuilder.build().toString();
 
         Request request = new Request.Builder()

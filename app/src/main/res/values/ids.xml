@@ -2,4 +2,5 @@
 <resources>
     <item name="this_post_id" type="id" />
     <item name="id_my_comment_parent_id" type="id" />
+    <item name="btn_return1" type="id" />
 </resources>
