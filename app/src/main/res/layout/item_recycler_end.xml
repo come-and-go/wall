@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:layout_marginTop="20sp"
+    android:orientation="vertical"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/end_text"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="-----------到底了，再划也没有啦-----------"
+            android:gravity="center"/>
+    </LinearLayout>
+</LinearLayout>

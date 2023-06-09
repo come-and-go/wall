@@ -5,6 +5,11 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.graphics.Rect;
+import android.media.MediaPlayer;
+import android.widget.VideoView;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -12,6 +17,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +33,18 @@ import com.example.wall.ui.view.SwipeRefresh;
 import com.example.wall.ui.view.SwipeRefreshLayout;
 import com.example.wall.ui.vo.CommentForPost;
 import com.example.wall.ui.vo.Posts;
+//import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -40,13 +58,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+//import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+//import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 public class UserPostDetailsActivity extends BaseActivity {
 
@@ -79,13 +100,16 @@ public class UserPostDetailsActivity extends BaseActivity {
 
         private static final int VIEW_TYPE_SPECIAL = 0; // 特殊Item的视图类型
         private static final int VIEW_TYPE_NORMAL = 1; // 普通Item的视图类型
+        private static final int VIEW_TYPE_END = 2; // end的视图类型
 
         private List<CommentForPost> comments;
         private Posts inner_post;
+        private int end;
 
-        public CommentAdapter(List<CommentForPost> comments, Posts inner_post) {
+        public CommentAdapter(List<CommentForPost> comments, Posts inner_post, int end) {
             this.comments = comments;
             this.inner_post = inner_post;
+            this.end = end;
         }
 
         public void setSpecialComment(Posts inner_post) {
@@ -97,7 +121,11 @@ public class UserPostDetailsActivity extends BaseActivity {
         public int getItemViewType(int position) {
             if (position == 0 && inner_post != null) {
                 return VIEW_TYPE_SPECIAL; // 返回特殊Item的视图类型
-            } else {
+            }
+            else if(position == getItemCount()-1){
+                return VIEW_TYPE_END;
+            }
+            else {
                 return VIEW_TYPE_NORMAL; // 返回普通Item的视图类型
             }
         }
@@ -110,7 +138,12 @@ public class UserPostDetailsActivity extends BaseActivity {
                 // 创建特殊Item的ViewHolder
                 View specialView = inflater.inflate(R.layout.item_inner_post, parent, false);
                 return new SpecialCommentViewHolder(specialView);
-            } else {
+            }
+            else if(viewType == VIEW_TYPE_END){
+                View view = inflater.inflate(R.layout.item_recycler_end, parent, false);
+                return new EndViewHolder(view);
+            }
+            else {
                 // 创建普通Item的ViewHolder
                 View normalView = inflater.inflate(R.layout.item_comment_user, parent, false);
                 return new NormalCommentViewHolder(normalView);
@@ -123,7 +156,11 @@ public class UserPostDetailsActivity extends BaseActivity {
                 // 绑定特殊Item的数据到ViewHolder
                 SpecialCommentViewHolder specialHolder = (SpecialCommentViewHolder) holder;
                 specialHolder.bind(inner_post);
-            } else if (holder instanceof NormalCommentViewHolder) {
+            } else if(holder instanceof EndViewHolder){
+                EndViewHolder endHolder = (EndViewHolder) holder;
+                endHolder.bind(end);
+            }
+            else if (holder instanceof NormalCommentViewHolder) {
                 // 绑定普通Item的数据到ViewHolder
                 int commentPosition = position;
                 if (inner_post != null) {
@@ -142,7 +179,22 @@ public class UserPostDetailsActivity extends BaseActivity {
             if (inner_post != null) {
                 count++; // 如果特殊Item存在，则增加一个Item数量
             }
+            count++;
             return count;
+        }
+        private class EndViewHolder extends RecyclerView.ViewHolder {
+            private final TextView endtext;
+            public EndViewHolder(@NonNull View itemView) {
+                super(itemView);
+                endtext = itemView.findViewById(R.id.end_text);
+            }
+            public void bind(int end) {
+                if(end == 1) {
+                    endtext.setText("-----------到底了，再划也没有啦-----------");
+                    Log.d("end","yesss");
+                }
+            }
+            // ViewHolder的实现
         }
         // 特殊Item的ViewHolder
         private class SpecialCommentViewHolder extends RecyclerView.ViewHolder {
@@ -150,6 +202,7 @@ public class UserPostDetailsActivity extends BaseActivity {
             // 定义特殊Item的视图组件
             private final SimpleExoPlayer player;
             private final PlayerView playerView;
+
             private final TextView contentTextView;
             private final ImageView contentImageView;
             private final TextView ownerTextView;
@@ -160,7 +213,6 @@ public class UserPostDetailsActivity extends BaseActivity {
                 player = ExoPlayerFactory.newSimpleInstance(itemView.getContext());
                 playerView = itemView.findViewById(R.id.id_m_in_post_video);
                 playerView.setPlayer(player);
-
                 contentTextView = itemView.findViewById(R.id.id_m_in_post_content);
                 contentImageView = itemView.findViewById(R.id.id_m_in_post_image);
                 ownerTextView = itemView.findViewById(R.id.id_m_in_post_author);
@@ -229,7 +281,6 @@ public class UserPostDetailsActivity extends BaseActivity {
                 player = ExoPlayerFactory.newSimpleInstance(itemView.getContext());
                 playerView = itemView.findViewById(R.id.id_u_comment_video);
                 playerView.setPlayer(player);
-
                 contentTextView = itemView.findViewById(R.id.id_u_comment_content);
                 contentImageView = itemView.findViewById(R.id.id_u_comment_image);
                 ownerTextView = itemView.findViewById(R.id.id_u_comment_author);
@@ -248,12 +299,13 @@ public class UserPostDetailsActivity extends BaseActivity {
                         layoutParams.height = 2000; // 设置高度
                         playerView.setLayoutParams(layoutParams);
                         DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(Util.getUserAgent(itemView.getContext(), "wall"));
-                        // 创建视频媒体源
+                        //创建视频媒体源
                         MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(url));
-                        // 准备视频播放器
+                        //准备视频播放器
                         player.prepare(videoSource);
-//                        // 开始播放视频
+                        // 开始播放视频
                         player.setPlayWhenReady(true);
+
                     }
                     else {
                         Glide.with(getApplicationContext())
@@ -348,7 +400,7 @@ public class UserPostDetailsActivity extends BaseActivity {
                                             post_title.setText(this_post.getTitle());
                                             InnerCommentsData comments = commentsResponse.getData(); // 解析从后端获取的回复数据，得到评论列表
                                             // 创建适配器并设置给 RecyclerView
-                                            CommentAdapter adapter = new CommentAdapter(comments.getComments(), this_post);
+                                            CommentAdapter adapter = new CommentAdapter(comments.getComments(), this_post,1);
                                             eRecyclerView.setAdapter(adapter);
                                             // 设置布局管理器，可以选择线性布局、网格布局等
                                             eRecyclerView.setLayoutManager(new LinearLayoutManager(UserPostDetailsActivity.this)); // 使用线性布局
@@ -362,6 +414,53 @@ public class UserPostDetailsActivity extends BaseActivity {
             }
         });
     }
+    public static class TopBottomSpacingDecoration extends RecyclerView.ItemDecoration {
+
+        private int topSpacing;
+        private int bottomSpacing;
+
+        public TopBottomSpacingDecoration(Context context, int topSpacing, int bottomSpacing) {
+            this.topSpacing = topSpacing;
+            this.bottomSpacing = bottomSpacing;
+        }
+        @Override
+        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            int position = parent.getChildAdapterPosition(view);
+            int itemCount = parent.getAdapter().getItemCount();
+
+            if (position == 0) {
+                // 第一个项
+                outRect.top = topSpacing;
+            }
+            if (position == itemCount - 1) {
+                // 最后一个项
+                outRect.bottom = bottomSpacing;
+            }
+
+        }
+    }
+//
+//    public static class BottomSpacingDecoration extends RecyclerView.ItemDecoration {
+//
+//        private int spacing;
+//
+//        public BottomSpacingDecoration(Context context, int spacing) {
+//            this.spacing = spacing;
+//        }
+//
+//        @Override
+//        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+//            super.getItemOffsets(outRect, view, parent, state);
+//            int position = parent.getChildAdapterPosition(view);
+//            int itemCount = parent.getAdapter().getItemCount();
+//
+//            if (position == itemCount - 1) {
+//                // 最后一个项
+//                outRect.bottom = spacing;
+//            }
+//        }
+//    }
     private void initView() {
         Back_Image = findViewById(R.id.id_u_back_list);
         post_title = findViewById(R.id.id_u_detail_title);
@@ -372,6 +471,10 @@ public class UserPostDetailsActivity extends BaseActivity {
         eSwipeRefreshLayout.setMode(SwipeRefresh.Mode.BOTH);
         eSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN);
         eRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        int top_spacing = getResources().getDimensionPixelSize(R.dimen.spacing_top);
+        int bottom_spacing = getResources().getDimensionPixelSize(R.dimen.spacing_bottom);
+        TopBottomSpacingDecoration decoration = new TopBottomSpacingDecoration(this, top_spacing, bottom_spacing);
+        eRecyclerView.addItemDecoration(decoration);
 
     }
     private void initEvent() {

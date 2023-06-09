@@ -30,11 +30,13 @@ import com.example.wall.ui.view.SwipeRefresh;
 import com.example.wall.ui.view.SwipeRefreshLayout;
 import com.example.wall.ui.vo.CommentForPost;
 import com.example.wall.ui.vo.Posts;
+//import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
+//import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.google.gson.Gson;
@@ -166,6 +168,7 @@ public class LookMycommentsActivity extends BaseActivity {
         // 普通Item的ViewHolder
         private class NormalCommentViewHolder extends RecyclerView.ViewHolder {
             // 定义普通Item的视图组件
+
             private final SimpleExoPlayer player;
             private final PlayerView playerView;
             private final TextView contentTextView;
@@ -198,6 +201,7 @@ public class LookMycommentsActivity extends BaseActivity {
                         layoutParams.width = 1000; // 设置宽度
                         layoutParams.height = 2000; // 设置高度
                         playerView.setLayoutParams(layoutParams);
+
                         DefaultHttpDataSourceFactory dataSourceFactory = new DefaultHttpDataSourceFactory(Util.getUserAgent(itemView.getContext(), "wall"));
                         // 创建视频媒体源
                         MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(url));
@@ -205,6 +209,7 @@ public class LookMycommentsActivity extends BaseActivity {
                         player.prepare(videoSource);
                         // 开始播放视频
                         player.setPlayWhenReady(true);
+
                     }
                     else {
                         Glide.with(getApplicationContext())

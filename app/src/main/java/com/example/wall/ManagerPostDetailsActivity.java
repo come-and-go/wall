@@ -78,6 +78,8 @@ public class ManagerPostDetailsActivity extends BaseActivity {
 
         private static final int VIEW_TYPE_SPECIAL = 0; // 特殊Item的视图类型
         private static final int VIEW_TYPE_NORMAL = 1; // 普通Item的视图类型
+        private static final int VIEW_TYPE_END = 2; // end的视图类型
+
 
         private List<CommentForPost> comments;
         private Posts inner_post;
@@ -96,7 +98,11 @@ public class ManagerPostDetailsActivity extends BaseActivity {
         public int getItemViewType(int position) {
             if (position == 0 && inner_post != null) {
                 return VIEW_TYPE_SPECIAL; // 返回特殊Item的视图类型
-            } else {
+            }
+            else if(position == getItemCount()-1){
+                return VIEW_TYPE_END;
+            }
+            else {
                 return VIEW_TYPE_NORMAL; // 返回普通Item的视图类型
             }
         }
@@ -109,7 +115,10 @@ public class ManagerPostDetailsActivity extends BaseActivity {
                 // 创建特殊Item的ViewHolder
                 View specialView = inflater.inflate(R.layout.item_inner_post, parent, false);
                 return new SpecialCommentViewHolder(specialView);
-            } else {
+            } else if(viewType == VIEW_TYPE_END){
+                View view = inflater.inflate(R.layout.item_recycler_end, parent, false);
+                return new EndViewHolder(view);
+            }else {
                 // 创建普通Item的ViewHolder
                 View normalView = inflater.inflate(R.layout.item_comment_manager, parent, false);
                 return new NormalCommentViewHolder(normalView);
@@ -122,7 +131,10 @@ public class ManagerPostDetailsActivity extends BaseActivity {
                 // 绑定特殊Item的数据到ViewHolder
                 SpecialCommentViewHolder specialHolder = (SpecialCommentViewHolder) holder;
                 specialHolder.bind(inner_post);
-            } else if (holder instanceof NormalCommentViewHolder) {
+            } else if(holder instanceof EndViewHolder){
+                EndViewHolder endHolder = (EndViewHolder) holder;
+                endHolder.bind();
+            }else if (holder instanceof NormalCommentViewHolder) {
                 // 绑定普通Item的数据到ViewHolder
                 int commentPosition = position;
                 if (inner_post != null) {
@@ -186,9 +198,22 @@ public class ManagerPostDetailsActivity extends BaseActivity {
             if (inner_post != null) {
                 count++; // 如果特殊Item存在，则增加一个Item数量
             }
+            count++;
             return count;
         }
 
+        private class EndViewHolder extends RecyclerView.ViewHolder {
+            private final TextView endtext;
+            public EndViewHolder(@NonNull View itemView) {
+                super(itemView);
+                endtext = itemView.findViewById(R.id.end_text);
+            }
+            public void bind() {
+                endtext.setText("-----------到底了，再划也没有啦-----------");
+                Log.d("end","yesss");
+            }
+            // ViewHolder的实现
+        }
         // 特殊Item的ViewHolder
         private class SpecialCommentViewHolder extends RecyclerView.ViewHolder {
             // 定义特殊Item的视图组件
@@ -204,6 +229,7 @@ public class ManagerPostDetailsActivity extends BaseActivity {
                 player = ExoPlayerFactory.newSimpleInstance(itemView.getContext());
                 playerView = itemView.findViewById(R.id.id_m_in_post_video);
                 playerView.setPlayer(player);
+
                 contentTextView = itemView.findViewById(R.id.id_m_in_post_content);
                 contentImageView = itemView.findViewById(R.id.id_m_in_post_image);
                 ownerTextView = itemView.findViewById(R.id.id_m_in_post_author);
@@ -262,6 +288,7 @@ public class ManagerPostDetailsActivity extends BaseActivity {
             // 定义普通Item的视图组件
             private final SimpleExoPlayer player;
             private final PlayerView playerView;
+
             private final TextView contentTextView;
             private final ImageView contentImageView;
             private final TextView ownerTextView;
@@ -272,6 +299,7 @@ public class ManagerPostDetailsActivity extends BaseActivity {
                 player = ExoPlayerFactory.newSimpleInstance(itemView.getContext());
                 playerView = itemView.findViewById(R.id.id_m_comment_video);
                 playerView.setPlayer(player);
+
                 contentTextView = itemView.findViewById(R.id.id_m_comment_content);
                 contentImageView = itemView.findViewById(R.id.id_m_comment_image);
                 ownerTextView = itemView.findViewById(R.id.id_m_comment_author);
@@ -297,6 +325,7 @@ public class ManagerPostDetailsActivity extends BaseActivity {
                         player.prepare(videoSource);
                         // 开始播放视频
                         player.setPlayWhenReady(true);
+
                     }
                     else {
                         Glide.with(getApplicationContext())
@@ -414,6 +443,10 @@ public class ManagerPostDetailsActivity extends BaseActivity {
         eSwipeRefreshLayout.setMode(SwipeRefresh.Mode.BOTH);
         eSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN);
         eRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        int top_spacing = getResources().getDimensionPixelSize(R.dimen.spacing_top);
+        int bottom_spacing = getResources().getDimensionPixelSize(R.dimen.spacing_bottom);
+        UserPostDetailsActivity.TopBottomSpacingDecoration decoration = new UserPostDetailsActivity.TopBottomSpacingDecoration(this, top_spacing, bottom_spacing);
+        eRecyclerView.addItemDecoration(decoration);
 
     }
     private void initEvent() {

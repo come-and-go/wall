@@ -45,6 +45,9 @@
             android:name=".CommentActivity"
             android:exported="false" />
         <activity
+            android:name=".ManagerPostDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".LookMycommentsActivity"
             android:exported="false" />
         <activity
@@ -59,9 +62,7 @@
         <activity
             android:name=".UserHomeActivity"
             android:exported="false" />
-        <activity
-            android:name=".ManagerPostDetailsActivity"
-            android:exported="false" />
+
 
         <service android:name="com.amap.api.location.APSService" />
 
