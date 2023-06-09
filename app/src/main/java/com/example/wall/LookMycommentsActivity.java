@@ -63,7 +63,6 @@ public class LookMycommentsActivity extends BaseActivity {
     RecyclerView eRecyclerView;
     List<CommentForPost> CommentsList;
     private int page_numc = 1;
-    private final InnerCommentsData have_showed = new InnerCommentsData();
 
 
     @Override
@@ -138,7 +137,6 @@ public class LookMycommentsActivity extends BaseActivity {
                                 final String responseBody = response.body().string();
                                 Log.i("回复", responseBody);
                                 Gson gson = new Gson();
-                                have_showed.delete_ten();
                                 get_up_my_comment(page_numc);
                             }
                         }
@@ -250,6 +248,10 @@ public class LookMycommentsActivity extends BaseActivity {
         eSwipeRefreshLayout.setMode(SwipeRefresh.Mode.BOTH);
         eSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN);
         eRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        int top_spacing = getResources().getDimensionPixelSize(R.dimen.spacing_top);
+        int bottom_spacing = getResources().getDimensionPixelSize(R.dimen.spacing_bottom);
+        UserPostDetailsActivity.TopBottomSpacingDecoration decoration = new UserPostDetailsActivity.TopBottomSpacingDecoration(this, top_spacing, bottom_spacing);
+        eRecyclerView.addItemDecoration(decoration);
 
     }
     private void initEvent() {
@@ -264,7 +266,6 @@ public class LookMycommentsActivity extends BaseActivity {
         eSwipeRefreshLayout.setOnRefreshListener(new SwipeRefresh.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                have_showed.empty();
                 get_up_my_comment(1);
                 page_numc = 1;
                 eSwipeRefreshLayout.setRefreshing(false);
@@ -276,7 +277,6 @@ public class LookMycommentsActivity extends BaseActivity {
 
             @Override
             public void onPullUpRefresh() {
-                page_numc = page_numc + 1;
                 get_my_comment(page_numc);
                 eSwipeRefreshLayout.setRefreshing(false);
                 eSwipeRefreshLayout.setPullUpRefreshing(false);
@@ -290,7 +290,7 @@ public class LookMycommentsActivity extends BaseActivity {
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd)+ "comment/mycomment").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
-        urlBuilder.addQueryParameter("page_size", "10");
+        urlBuilder.addQueryParameter("page_size", "1000");
         urlBuilder.addQueryParameter("username", all_username);
         String url = urlBuilder.build().toString();
 
@@ -322,7 +322,7 @@ public class LookMycommentsActivity extends BaseActivity {
                                 InnerCommentsData comments = commentsResponse.getData(); // 解析从后端获取的回复数据，得到评论列表
                                 int firstVisibleItemPosition = ((LinearLayoutManager) Objects.requireNonNull(eRecyclerView.getLayoutManager())).findLastCompletelyVisibleItemPosition();
                                 // 创建适配器并设置给 RecyclerView
-                                CommentAdapter adapter = new CommentAdapter(have_showed.add(comments));
+                                CommentAdapter adapter = new CommentAdapter(comments.getComments());
                                 eRecyclerView.setAdapter(adapter);
                                 // 设置布局管理器，可以选择线性布局、网格布局等
                                 eRecyclerView.setLayoutManager(new LinearLayoutManager(LookMycommentsActivity.this)); // 使用线性布局
@@ -339,7 +339,7 @@ public class LookMycommentsActivity extends BaseActivity {
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse(getResources().getString(R.string.ipadd) + "comment/mycomment").newBuilder();
         urlBuilder.addQueryParameter("page_num", String.valueOf(page_num));
-        urlBuilder.addQueryParameter("page_size", "10");
+        urlBuilder.addQueryParameter("page_size", "10000");
         urlBuilder.addQueryParameter("username", all_username);
         String url = urlBuilder.build().toString();
 
@@ -371,7 +371,7 @@ public class LookMycommentsActivity extends BaseActivity {
                                 InnerCommentsData comments = commentsResponse.getData(); // 解析从后端获取的回复数据，得到评论列表
                                 int firstVisibleItemPosition = ((LinearLayoutManager) Objects.requireNonNull(eRecyclerView.getLayoutManager())).findFirstVisibleItemPosition();
                                 // 创建适配器并设置给 RecyclerView
-                                CommentAdapter adapter = new CommentAdapter(have_showed.add(comments));
+                                CommentAdapter adapter = new CommentAdapter(comments.getComments());
                                 eRecyclerView.setAdapter(adapter);
                                 // 设置布局管理器，可以选择线性布局、网格布局等
                                 eRecyclerView.setLayoutManager(new LinearLayoutManager(LookMycommentsActivity.this)); // 使用线性布局

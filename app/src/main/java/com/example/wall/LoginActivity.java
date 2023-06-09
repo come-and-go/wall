@@ -19,8 +19,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import com.example.wall.utils.SHA256;
 import com.google.gson.Gson;
 
+import org.conscrypt.OpenSSLMessageDigestJDK;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +52,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = mEtUsername.getText().toString();
                 String password = mEtPassword.getText().toString();
+                SHA256 sha = new SHA256();
+                password = sha.getSHA256(password);
                 if (TextUtils.isEmpty(username)) {
                     Toast.makeText(getApplicationContext(), "请输入用户名", Toast.LENGTH_SHORT).show();
                     return;
@@ -65,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     try {//提交的参数
                         jsonObject.put("userName",username);
-                        jsonObject.put("password",password);
+                        jsonObject.put("password",(password));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -135,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = null;
-                intent = new Intent(LoginActivity.this, CommentActivity.class);
+                intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });

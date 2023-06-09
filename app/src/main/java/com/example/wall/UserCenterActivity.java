@@ -23,6 +23,7 @@ public class UserCenterActivity extends AppCompatActivity {
 
     ImageView UserCenter;
     ImageView Home;
+    ImageView newpost;
     LinearLayout myPosts;
     LinearLayout myComments;
     LinearLayout change_password;
@@ -48,12 +49,23 @@ public class UserCenterActivity extends AppCompatActivity {
             }
         });
 
+        newpost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = null;
+                intent = new Intent(UserCenterActivity.this, PostActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         change_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = null;
-                intent = new Intent(UserCenterActivity.this, LoginActivity.class);
+
+                intent = new Intent(UserCenterActivity.this, ChangePassActivity.class);
+                intent.putExtra("type","user");
                 startActivity(intent);
             }
         });
@@ -95,5 +107,6 @@ public class UserCenterActivity extends AppCompatActivity {
         show_name = findViewById(R.id.id_u_center_username);
         myPosts = findViewById(R.id.tv_my_posts);
         myComments = findViewById(R.id.tv_my_comments);
+        newpost = findViewById(R.id.id_newPost);
     }
 }

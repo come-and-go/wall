@@ -8,6 +8,6 @@ public class ReleaseServer implements IRequestServer {
     @NonNull
     @Override
     public String getHost() {
-        return "http://192.168.0.117:8086";
+        return "http://192.168.43.214:8086";
     }
 }

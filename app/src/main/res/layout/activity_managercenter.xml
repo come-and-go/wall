@@ -100,7 +100,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="410dp"
+        android:layout_height="390dp"
         android:background="@color/white"/>
     <!--    1296db-->
     <LinearLayout

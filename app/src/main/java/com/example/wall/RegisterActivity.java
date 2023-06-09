@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.wall.utils.SHA256;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -49,6 +50,8 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = mEtUsername.getText().toString();
                 String password = mEtPassword.getText().toString();
+                SHA256 sha = new SHA256();
+                password = sha.getSHA256(password);
                 if (TextUtils.isEmpty(username)) {
                     Toast.makeText(getApplicationContext(), "请输入用户名", Toast.LENGTH_SHORT).show();
                     return;

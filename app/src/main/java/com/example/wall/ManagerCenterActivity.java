@@ -50,7 +50,8 @@ public class ManagerCenterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = null;
-                intent = new Intent(ManagerCenterActivity.this, LoginActivity.class);
+                intent = new Intent(ManagerCenterActivity.this, ChangePassActivity.class);
+
                 startActivity(intent);
             }
         });
@@ -60,6 +61,7 @@ public class ManagerCenterActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = null;
                 intent = new Intent(ManagerCenterActivity.this, LoginActivity.class);
+                intent.putExtra("type","admin");
                 startActivity(intent);
             }
         });
